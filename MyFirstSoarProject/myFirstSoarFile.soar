@@ -1,0 +1,25 @@
+##!
+# @file
+#
+# @created by Matthew Versaggi 20201229
+
+
+### The Hello World Operator 'Proposal' Production: Initialization
+
+sp {propose*helloworld 
+    (state <s> ^type state ^superstate nil)
+    --> 
+    (<s> ^operator <o> +)
+    (<o> ^name hello-world)
+    }
+
+
+### The 'Apply' Hello World Production
+
+sp {apply*helloworld 
+    (state <s> ^operator <o>)
+    (<o> ^name hello-world)
+    --> 
+    (write |I'm sorry Matthew.|) (write |I'm afraid I can't do that.|) 
+    (halt) 
+    }

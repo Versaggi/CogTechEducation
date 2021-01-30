@@ -1,0 +1,416 @@
+##!
+# @file
+#
+
+### README ##########################################################################
+# This file demonstrates a good-practice coding approach for structuring
+#   a Soar agent to match a problem space diagram.
+# (See attached file "problem-space-navigator-demo-diagram.jpg")
+#
+# This agent uses Op No-Change (ONC) impasses to go from one problem space to a child problem space.
+# I name each substate after the name of the superstate operator.
+#   This is because the whole substate is effectively the application of that operator.
+# The proposals for each operator are written so that their conditions are no
+#   longer satisfied once the operator is applied (once the substate returns its results).
+# I use elaboration rules to copy relevant info from the superstate to the substate before using it.
+# 
+# I also show here the way of structuring the file that I find easiest to use.
+# This is personal style. Each Soar programmer tends to have their own style.
+# At the top of the file, I document the operators and relevant WM structures used in the file.
+# Then at the top of the code, I put elaboration rules that apply to all substates.
+# Then I organize remaining rules according to their problem space.
+#   First, elaboration rules for that problem space.
+#   Then, the propose/apply rules for each operator in that problem space.
+# For larger agents, I find it very helpful to separate rules into different files according to problem space.
+#   One file for elaborations shared by all problem spaces.
+#   Then one file for each problem space.
+#####################################################################################
+
+######
+# AUTHOR: Bryan Stearns
+# MODS: Matthew Versaggi
+# DATE:   2021-01-12
+#
+##        OPERATORS
+# (init) +                                   # Create a name for the topstate
+# (collect-problems) +                       # Propose the "collect-problems" substate (problem space)
+# ==> (identify-omaha-problems) +            # SUBSTATE: Applies the "collect-problems" parent operator: collect the relevant omaha problem structures for this patient
+# (address-problem) =                        # Collect interventions for one particular problem. One operator proposed per problem, indifferent preference.
+# ==> (return-interventions) +               # SUBSTATE: Collect relevant interventions for the superstate operator's problem.
+# (output-care-plan) +                       # Print output to the output-link once all interventions are collected; halt the agent.
+#
+##        WM STRUCTURES
+# (<ts> ^name <name>                         # The name of the state
+#       ^problem-data <pd>                   # An object that keeps the results of agent reasoning about the patient's problems
+#         [^member-problem <mp>]             # Data on one specific problem from the patient's medical record.
+#                                            # (I use []s to indicate there can be more than one of these WMEs attached to the parent object at once.)
+#            ^omaha-problem <op>             # This would hypothetically link to some SMEM structure with more info about the problem
+#            ^kbs <kbs>                      # Whatever the patient's KBS score is for this problem
+#               ^knowledge 1                 # Knowledge score, range: [1-5]
+#               ^behavior 1                  # Behavior score, range: [1-5]
+#               ^status 1                    # Status score, range: [1-5]
+#            ^intervention-portfolio <ip>    # An object that keeps the results of agent reasoning about possible interventions
+#               ^message |string|            # Any meta-data message related to the whole portfolio
+#              [^intervention <i1>]          # A specific possible intervention
+#                  ^message |string|         # Any message specific to this intervention
+######
+
+
+
+###
+### (I put this elaboration rule at the top because it applies to *all* substates.)
+###
+#
+# We name the substates w/the name of the Superstate's "Operator" as a covention.
+# Proposal, preference, and elaboration rules are all "elaboration" rules - 'Apply' rules, 
+# on the other hand test the operator of the 'same' state to create o-Supported WME's.
+#
+# Binding to this structure: ^superstate.'operator'.name
+# Note the "OPERATOR" reference.
+#
+
+sp {elaborate*substate-name
+    "This rule ensures that all substates are named after their superstate operator name, 
+     if that substate is from an Op No-Change (ONC) impasse."
+    
+    (state <s> ^superstate.operator.name <oname>)
+    -->
+    (<s> ^name <oname>)
+}
+
+
+
+###
+### Codebase Organized according to Problems Space: "Make Care Plan"
+###
+
+
+####### PROBLEM SPACE: MAKE-CAREPLAN (ROOT) #########
+#
+# (Here are the propose/apply rules for the operators  
+#  of the 'make-careplan' problem space).
+#
+####### PROBLEM SPACE: MAKE-CAREPLAN (ROOT) #########
+
+###
+### OPERATOR: INIT
+###
+#
+# Sets up the topstate (aka. S1) 'name' and any initial WM structures
+#
+#
+sp {propose*make-careplan*init
+    "Propose setting up the agents topstate (S1) and any beginning WM elements."
+
+    (state <s> ^superstate nil
+                -^name)
+    -->
+    (<s> ^operator <o> +)
+    (<o> ^name make-careplan-init)
+}
+
+sp {apply*make-careplan*init
+    "Instantiate the operator into WM."
+    (state <s> ^operator.name make-careplan-init)
+    -->
+    (<s> ^name make-careplan)
+}
+
+
+
+###
+### OPERATOR: COLLECT-PROBLEMS (SUBSTATE GENERATING) => "Identify Omaha Problems"
+###
+#
+# Create the 'data structure' in WM that represents the Omaha problems detected in this patient's EHR
+#
+# ** Applied in 'COLLECT-PROBLEMS' substate via ONC (Operator-No-Change) impasse **
+###
+#
+# NOTE:
+# "|make-careplan|" - is a convention for a string to be accepted by the SOAR parser.
+# Looking for the absence of a '-^problem-data' WME - this will hold the Omaha Problem data when finished computing.
+# If this structure has not been returned (meaning porcessing isn't complete) then propose it.  
+# => Shopping list arch-type concept. [Useful Metaphor]
+#
+# HOW THIS WORKS: If there is an operator proposal that SOAR accepts with out a corresponding APPLY rule, 
+# then SOAR creates an ONC (Op-No-Change) Impasse, and thusly creates a substate to break the impasse. 
+# This is the mechanism for creating various substates to do specific processing in the agent. 
+# See the Programmers Manual for more information.
+
+
+sp {propose*make-careplan*collect-problems
+    "Propose the WM structure that will hold the Omaha Problems detected in the patients EHR.
+     This proposal will retract as soon as this problem-data structure
+     gets returned from the substate, indicating processing has completed."
+
+    (state <s> ^name |make-careplan|
+                -^problem-data)       # This proposal will retract as soon as this 'problem-data' structure
+                                      # gets returned from the substate, indicating processing has completed.
+    -->
+    (<s> ^operator <o> +)
+    (<o> ^name collect-problems)
+}
+
+
+###
+### OPERATOR: ADDRESS-PROBLEM (SUBSTATE GENERATING) => "Return Interventions"
+###
+#
+# Create the 'data structure' in WM that represents the portfolio of relevant interventions for this 
+# patient's discovered problems.
+#
+# ** Applied in 'ADDRESS-PROBLEM' substate via ONC impasse **
+#
+# ONC - Op No Change (Select an Operator but there are *no* apply rules to fire)
+# For 'each' problem we find of the patients, this operator will be proposed to process them appropriately.
+# Declaring the shopping list - 'Metaphor'.
+# 
+# Because this can be proposed multiple times (at once), it is necessary to use the '=' to avoid a SOAR tie-impasse.  
+#
+###
+
+sp {propose*make-careplan*address-problem
+    "Propose this rule for each member problem that still has not been analyzed for possible interventions.
+     This proposal will retract as soon as this intervention-portfolio structure gets returned from the 
+     substate for this member-problem."
+
+    (state <s> ^name |make-careplan|
+                ^problem-data.member-problem <mp>)
+    (<mp> -^intervention-portfolio <ip> )  # 
+    -->
+    (<s> ^operator <o> + =)            # Use the indifferent preference as there will be multiple instances 
+                                       # of this operator proposed at once - Order doesn't matter.
+    (<o> ^name address-problem
+        ^member-problem <mp>)          # Attach the specific problem with this operator (copy pointer). 
+                                       # There will be a different operator proposed 'per problem'.
+}
+
+
+###
+### OPERATOR: OUTPUT-CARE-PLAN
+###
+#
+# Create the 'output-link' response after all patient data has been processed
+# ** HALTs the agent in application **
+#
+# Rules used 'negation conjunction' to match: not the case that the situation exists where the
+# intervention-portfolio didn't exist. (Double negative)
+# TRANSLATION: "If a member problems exists then require it to have an intervention portfolio".
+#
+# This is the termination condition - determines when the program ends. Master check box - metaphor. 
+#
+# Demonstrating the use of an output link.
+#
+###
+
+sp {propose*make-careplan*output-care-plan
+    "Propose this operator if there are no member-problems left in WM that have still not been analyzed."
+    (state <s> ^name |make-careplan|
+                ^problem-data <pd>)
+    -{ 
+       (<pd> ^member-problem <mp>)
+       (<mp> -^intervention-portfolio) 
+     }
+    -->
+    (<s> ^operator <o> +)
+    (<o> ^name output-care-plan)
+}
+
+sp {apply*make-careplan*output-care-plan
+    "This output is just mocked up data (of obvious intent) that is an example of what is intended.
+     Print this out to the debugger screen as well as place it on the ^io.output-link."
+
+    (state <s> ^operator.name output-care-plan
+                ^io.output-link <ol>)
+    -->
+    (<ol> ^response |Cake is a lie. Eat less sugar!|)               # This furnishes the MSG to the SML (the UI).
+    (write (crlf) |OUTPUT: Cake is a lie. Eat less sugar!| (crlf))  
+    (halt)
+}
+
+
+
+
+
+####### PROBLEM SPACE: COLLECT-PROBLEMS #########
+#
+# (Here are propose/apply rules for the operators 
+#  of the collect-problems problem space)
+#
+####### PROBLEM SPACE: COLLECT-PROBLEMS #########
+
+
+###
+### OPERATOR: IDENTIFY-OMAHA-PROBLEMS
+###
+#
+# For demo purposes, create 'arbitrary' problem info all at once as if it was taken from SMEM and input-link data
+#
+# Create mock data for WM and connect it to the '^superstate <ss>', which satisfy's the shopping list,
+# AKA - making the "propose*make-careplan*collect-problems" operator condition null.
+#
+# As soon as the operator that created the substate no longer matches (the impasse is broken) than exit the substate. 
+#
+###
+
+sp {propose*collect-problems*identify-omaha-problems
+    "Propose Mocking Up a list of Omaha Problems for the sake of illustration."
+
+    (state <s> ^name collect-problems)
+    -->
+    (<s> ^operator <o> +)
+    (<o> ^name identify-omaha-problems)
+}
+
+sp {apply*collect-problems*identify-omaha-problems
+    "Create Mock Omaha Data (No. 1-5) and put it into the ^problem-data WME structure of WM."
+
+    (state <s> ^operator.name identify-omaha-problems
+                ^superstate <ss>)
+    -->
+    (<ss> ^problem-data <dnew>)
+    (<dnew> ^member-problem <p1>
+            ^member-problem <p2>
+            ^member-problem <p3>)
+    (<p1> ^omaha-problem <op1>    # This would hypothetically link to some SMEM structure with more info about the problem #1
+            ^kbs <k1>)
+    (<k1> ^knowledge 1
+            ^behavior 1
+            ^status 1)
+    (<p2> ^omaha-problem <op2>    # This would hypothetically link to some SMEM structure with more info about the problem #2
+            ^kbs <k2>)
+    (<k2> ^knowledge 2
+            ^behavior 2
+            ^status 2)
+    (<p3> ^omaha-problem <op3>    # This would hypothetically link to some SMEM structure with more info about the problem #3
+            ^kbs <k3>)
+    (<k3> ^knowledge 3
+            ^behavior 3
+            ^status 3)     
+}
+
+
+
+
+########## PROBLEM SPACE: ADDRESS-PROBLEM #########
+#
+# (Here are elaborations and propose/apply rules 
+# for the operators of the address-problem problem 
+# space)
+#
+########## PROBLEM SPACE: ADDRESS-PROBLEM #########
+
+
+###
+### Elaboration Rules
+###
+#
+# These "Elaboration Rules" ONLY apply in 'this' subspace, therefore write those rules 
+# before writing the operators.
+#
+#
+# Creating a local pointer for ease of access
+  
+sp {elaborate*address-problem*superstate-operator*member-problem
+    "Copy the superstate <operator> structures straight to the substate to simplify rule access 
+    (this practice can make coding cleaner and also helps chunking make cleaner rules, if ever 
+     using chunking)"
+
+    (state <s> ^name address-problem
+                ^superstate.operator.member-problem <mp>)
+    -->
+    (<s> ^member-problem <mp>)
+}
+
+sp {elaborate*address-problem*intervention-needed
+    "KBS RULE: Mark whether the kbs score is high enough to warrant intervention."
+
+    (state <s> ^member-problem <mp>)
+    (<mp> ^kbs.<< knowledge behavior status >> < 5)  # This condition will be true if any of "Knowledge", 
+                                                     # "Behavior", or "Status" are < 5.
+    -->
+    (<mp> ^intervention-needed true)                 # Now the agent can just test this 'flag', rather than 
+                                                     # have to perform the < 5 test every time it considers 
+                                                     # this question - saves on compute time.
+}
+
+
+###
+### OPERATOR: RETURN-INTERVENTIONS
+###
+#
+# For demo purposes only, create "arbitrary intervention information" all at once as if it was taken from SMEM data
+# There are two 'apply' rules in this demo operator: one for whether an intervention is required based on KBS score, 
+# abd one for when an intervention isn't.
+#
+# Convention 'ip-new' - references a 'new' variable that has not been seen before - adope this.
+#
+# NOTE: Multiple Interventions to the same problem
+#
+###
+
+sp {propose*address-problem*return-interventions
+    "Propose the general return interventions operator to .... "
+    (state <s> ^name address-problem)
+    -->
+    (<s> ^operator <o> +)
+    (<o> ^name return-interventions)
+}
+
+sp {apply*address-problem*return-interventions*intervention-needed
+    "This is the case where KBS < 5 and interventions are warranted."
+
+    (state <s> ^operator.name return-interventions
+                ^member-problem <mp>
+                ^superstate <ss>)
+    (<mp> ^intervention-needed true)
+    -->
+    (<mp> ^intervention-portfolio <ip-new>)
+    (<ip-new> ^intervention <i1-new>
+              ^intervention <i2-new>)
+    (<i1-new> ^message |Do ALL the healthy things!|)
+    (<i2-new> ^message |Don't eat everything. It's okay not to know what it tastes like. (You can probably guess anyway.)|)
+}
+
+
+sp {apply*address-problem*return-interventions*no-intervention-needed
+    "This is the case where KBS = 5 and interventions are NOT warranted."
+
+    (state <s> ^operator.name return-interventions
+                ^member-problem <mp>
+                ^superstate <ss>)
+    (<mp> -^intervention-needed )
+    -->
+    (<mp> ^intervention-portfolio <ip-new>)
+    (<ip-new> ^message |No response needed.|)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

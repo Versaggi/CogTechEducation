@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soaragent>
+  <startfile path="smem.soar" />
+  <members>
+    <member path="load-POC_Smem.soar" />
+    <member path="prediabetesossprobTD.soar" />
+    <member path="smem.soar" />
+    <member path="prediabetesossprobBU.soar" />
+    <member path="smem_navigator.soar" />
+    <member path="prediabetesomahatax.soar" />
+  </members>
+</soaragent>
+

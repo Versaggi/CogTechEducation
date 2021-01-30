@@ -1,0 +1,9 @@
+##!
+# @file
+#
+# @created by Matthew Versaggi 20201230
+
+sp { helloworld ( state <s> ^superstate nil) --> 
+    (write |I'm A Hungry, Thristy Robot.|) (write |What should I do about that?|) 
+    (halt) 
+    }

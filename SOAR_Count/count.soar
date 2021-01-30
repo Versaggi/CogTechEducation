@@ -1,0 +1,106 @@
+##!
+# @file
+#
+# @created by Matthew Versaggi 20201231
+
+### 
+###    I.    Propose the top space
+###
+### The code in this section proposes a simple space to work in
+
+### simple state to start working in: IF no Impasses and a superstate of NIL 
+### initialize count
+
+
+### If a state exists and the state isn't named count, 
+### then propose the 'initialize-count' operator.
+sp {propose*initialize-count
+   (state <s> ^type state)
+ - (<s> ^name count)
+   -->
+   (<s> ^operator <o> + )  
+   (<o> ^name initialize-count ) 
+}
+
+
+### If initialize-count is selected, then create a count of ZERO
+sp {apply*initialize-count
+   (state <s> ^operator <o> )
+   (<o> ^name initialize-count)
+   -->
+   (<s> ^name count ^count 0)  
+}
+
+
+### If there is a count, then propose count
+sp {propose*count
+   (state <s> ^count < 10 )
+   -->
+   (<s> ^operator <o> + )  
+   (<o> ^name count )  
+}
+
+
+
+### If count is selected, then replace the current-count with (+1 current-count)
+sp {apply*count
+   (state <s> ^operator.name count ^count <count> )
+   -->
+   (write (crlf) |Count: | (+ 1 <count>))   
+   (<s> ^count <count> - (+ 1 <count>))  
+    
+}
+
+
+### Goal Detection: If the count is 10, then halt.
+
+sp {detect*count10
+    (state <s> ^count 10)
+-->
+    (halt)    
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

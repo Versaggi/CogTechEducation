@@ -1,0 +1,72 @@
+###
+### Desired State: Omaha Sign/Symptom 
+###
+
+# This rule is an example of how *ANY* part of the graph put into SMem can be retrieved
+# into WM and examined. The key is knowing the graph structure and following the edges
+# to the nodes of interest. Below are those for this graph structure.
+# 
+# EXAMPLE: The Omaha Signs/Symptoms = 'Impotency'
+#          The Omaha Problem = 'reproductivefunction'
+#          The Prioritization = 'physical', priority = 1.
+#          
+# SMem Retrieved State Graph:
+#
+# COMPLETE GRAPH EDGES:
+# "^root.omahasignsymptom.omahaproblem.prioritization"
+#
+# NODES: 'omahasignsymptom'
+# "^root.omahasignsymptom.name"
+# "^root.omahasignsymptom.code"
+#
+# NODE: 'omahaproblem'
+# "^root.omahasignsymptom.omahaproblem.name"
+#
+# Nodes: 'prioritization'
+# "^root.omahasignsymptom.omahaproblem.prioritization.name"
+# "^root.omahasignsymptom.omahaproblem.prioritization.priority"
+
+
+sp {detect*goal-achieved
+    "The rule below uses string objects and variables to search for specific edges in the graph,
+     once it find something it binds it to the respective variables for use in the RHS of the rule."
+
+#   (state <s> ^name omaha_taxonomy_smem ^current-item <root>)
+  (state <s> ^current-item <root>)
+   (<root> ^omahasignsymptom <oss>)                       # Edge: 'omahasignsymptom'
+   (<oss> ^name |Impotency|)                              # Node: 'name'
+   (<oss> ^name <oss_name>)
+   (<oss> ^code <oss_code>)
+   (<oss> ^omahaproblem <opbm>)                           # Edge: 'omahaproblem' 
+   (<opbm> ^name |reproductivefunction|)                  # Node: 'name'
+   (<opbm> ^name <opbm_name>)
+   (<opbm> ^prioritization <prioritization>)              # Edge: 'prioritization'
+   (<prioritization> ^name |physical|)                    # Node: 'name'
+   (<prioritization> ^name <pri_name>)                    # Edge: 'prioritization'
+   (<prioritization> ^priority 1)                         # Node: 'value'
+   (<prioritization> ^priority <pri_value>)
+   (<oss> ^intervention <intervention>)             # Each OSS has 1 or more "touples" that comprise an "Intervention".
+   (<intervention> 
+        ^category.name surveillance <category_name> ^category.value <category_value>                                 # Cateogry
+        ^target.name signssymptomsphysical <target_name> ^target.value <target_value>                                # Target
+        ^caredescriptor.name erectiledysfunction <caredescriptor_name> ^caredescriptor.value <caredescriptor_value>) # Care Descriptor
+      
+-->
+
+   (write (crlf)(crlf) |A Node of interest from the Directed Graph retrieved from Semantic Memory: |)
+   
+   (write (crlf) |Omaha Sign & Symptom Name: | <oss_name> )
+   (write (crlf) |Omaha Sign & Symptom Code: | <oss_code> )
+   (write (crlf) |Omaha Problem: | <opbm_name> )
+   (write (crlf) |Omaha Priority Name: | <pri_name>)
+   (write (crlf) |Omaha Priority Value: | <pri_value>)
+   
+   (write (crlf) |Omaha Category Name: | <category_name>)
+   (write (crlf) |Omaha Category Value: | <category_value>)
+   (write (crlf) |Omaha Target Name: | <target_name>)
+   (write (crlf) |Omaha Target Value: | <target_value>)
+   (write (crlf) |Omaha Caredescriptor Name: | <caredescriptor_name>)
+   (write (crlf) |Omaha Caredescriptor Value: | <caredescriptor_value>)
+   
+   (halt)
+   }

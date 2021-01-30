@@ -1,0 +1,213 @@
+##!
+# @file
+#
+# @created by Matthew Versaggi 20210114
+
+
+### README ##########################################################################
+# This file demonstrates the SMEM query and the SMEM retrieve commands.
+# SMEM is initialized with a loop of three objects.
+# The agent begins by using ^query to get one of these three.
+# The agent then uses ^retrieve to get the next item in the loop sequence.
+# This retrieve cycles will continue forever, since the loop never ends.
+# (Refer to the Soar manual for details on the SMEM structures and how to use them.)
+#
+########################
+# AUTHOR: Bryan Stearns
+# DATE:   2021-01-14
+#####################################################################################
+
+
+smem --set learning on
+# smem --enable
+
+smem --add {
+    (<a> ^links-to <b> ^name A)
+    (<b> ^links-to <c> ^name B)
+    (<c> ^links-to <a> ^name C)
+}
+
+#####################################################################################
+
+###
+# OPERATOR: QUERY-ROOT
+#
+# Use an query command to get the first item in the loop from smem
+# Apply rule creates "^smem.command.query.name" in WM.
+# "A" is the keyword that we are searching for. SOAR send a query to SMEM
+# looking anything w/a ".name A" 
+###
+###
+# Conversation w/SMEM module - Can you search for "X", and respond during the 'next' 
+# decision cycle by putting the X object on the 'results structure'.
+#
+# Ask SMem to give me an element I'm searching for, provide that on the results structure.
+# The results structure is 'Tribal Knowledge' - you have to know where it is and how to 
+# access the "results structure" from there.
+###
+###
+
+sp {propose*query-root
+    (state <s> ^superstate nil
+            -^name)
+-->
+    (<s> ^operator <o> +)
+    (<o> ^name query-root)
+}
+
+
+sp {apply*query-root
+    "Grab the reference of ^smem.command so that it can be used on RHS of rule"
+    (state <s> ^operator.name query-root
+                ^smem.command <scmd>)
+-->
+    (<s> ^name smem-example)
+    (<scmd> ^query <q>)
+    (<q> ^name A)
+}
+
+ 
+
+###
+# OPERATOR: COLLECT-ROOT
+# Place the query result onto the "topstate (S1)" and remove the query command.
+###
+###
+# Once Architecture find something it communicates that via "^smem.result.success".
+# Test for *no* '^current-item', as we'll eventually store the result here. 
+# Test for existence '^query' w/a variable, so we can remove it.
+#
+# Store result from SMem module onto WM for long term keeping - make sure to 'cleanup' afterward.
+# Once Query obj gets removed, so does the results structure.
+#
+# If there is a successful result and no current-item yet, it must be the initial query result.
+# NOTE: '^current-item' is important in this transaction.
+###
+###
+
+sp {propose*collect-root
+    "If there is a successful result and no current-item yet, it must be the initial query result."
+    (state <s> ^name smem-example
+            ^smem.result.success <cue>
+            -^current-item)
+-->
+    (<s> ^operator <o> +)
+    (<o> ^name collect-root)
+}
+
+
+sp {apply*collect-root
+    "Collect the query result and remove the query command to free up the smem link."
+    (state <s> ^operator.name collect-root
+        ^smem <smem>)
+    (<smem> ^command <scmd>
+            ^result.retrieved <lti>)
+    (<scmd> ^query <q>)
+    (<lti> ^name <name>)
+-->
+    (<s> ^current-item <lti>)
+    (<scmd> ^query <q> -)
+    (write |Collected | <name> | (queried)| (crlf))
+}
+
+
+
+###
+# OPERATOR: RETRIEVE-NEXT
+# Use a retrieve command to get the next item in the loop from SMem
+###
+###
+# Demo 'Retrieve' command instead of 'Query': '^current-item' - from previous rule.
+# Make sure there is not a (success/failure) result.
+# Note: One operator per decision cycle.
+# Attach the 'next' value to the operator - unique technique.
+# Ultimately it'll retrieve the "next" thing.
+# SMem retrieval only returns depth of 1 by default, but you can tell it to give you more by flagging 'retrieve' cmd.
+# Pg 152 Depth cmd.
+###
+###
+
+###
+
+sp {propose*retrieve-next
+    (state <s> ^name smem-example
+            ^current-item <cur>
+            ^smem.result <sres>)
+    -(<sres> ^<< success failure >> )
+    (<cur> ^links-to <next>)
+-->
+    (<s> ^operator <o> +)
+    (<o> ^name retrieve-next
+        ^next-lti <next>)
+}
+
+sp {apply*retrieve-next
+    (state <s> ^operator <o>
+            ^smem.command <scmd>)
+    (<o> ^name retrieve-next
+        ^next-lti <next>)
+-->
+    (<scmd> ^retrieve <next>)
+}
+
+
+###
+# OPERATOR: COLLECT-NEXT
+# Replace current-item on the topstate with the retrieved item and remove the retrieve command.
+###
+###
+###
+# Replace current-item on topstate w/the most recent retrieval.
+#
+# ^result.retrieved - New instance, includes more edges on the graph
+# ^retrieve - does not include more edges.
+###
+###
+
+sp {propose*collect-next
+    "If there is a result from a retrieve command, collect it."
+    (state <s> ^name smem-example
+            ^smem <smem>)
+    (<smem> ^command <scmd>
+            ^result <sres>)
+    (<scmd> ^retrieve <lti>)
+    (<sres> ^success <lti>)
+-->
+    (<s> ^operator <o> +)
+    (<o> ^name collect-next)
+}
+
+
+sp {apply*collect-next
+    "Collect the retrieve result and remove the retrieve command to free up the smem link."
+    (state <s> ^operator.name collect-next
+            ^current-item <cur>
+            ^smem <smem>)
+    (<smem> ^command <scmd>
+            ^result.retrieved <lti-new-instance>)  # The retrieved ID will be linked to the same LTI in SMEM as <lti-old-instance>, but will be a new unique WM ID.
+    (<scmd> ^retrieve <lti-old-instance>)
+    (<lti-new-instance> ^name <name>)
+-->
+    (<s> ^current-item <cur> -
+        ^current-item <lti-new-instance>)
+    (<scmd> ^retrieve <lti-old-instance> -)
+    (write |Collected | <name> | (retrieved)| (crlf))
+}
+
+
+
+###
+###
+# (<scmd> ^retrieve <lti-old-instance> -) =>  state of WM is the same as the 1st query to get A
+# Nothing on the SMem link. Same condition used to collect next item - same state of the graph.
+###
+###
+
+
+###
+### Use this code base to work w/the POC SMem structures
+###
+
+
+
+

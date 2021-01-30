@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soaragent>
+  <startfile path="TextExample.soar" />
+  <members>
+    <member path="TextExample.soar" />
+    <member path="hts7.soar" />
+    <member path="blocksworld.soar" />
+    <member path="ProAthlete.soar" />
+    <member path="ht2s7.soar" />
+  </members>
+</soaragent>
+

@@ -1,0 +1,24 @@
+PHYSICAL:
+CIRCULATION: [KBS]: ###
+ABPR: Abnormal Blood Pressure Reading
+DSC: Discoloration of Skin/Cyanosis
+TCAA: Temperature Change in Affected Area
+
+
+(<root> ^name root ^prioritycategory <physical>)
+(<physical> ^name physical <circulation> <pregnancy> <urinaryfunction> <neuromusculoskeletal> <skin> <reproductivefn> <oralhealth>)
+
+
+(<circulation> ^name circulation <abpr> <dsc> <tcaa>)
+(<abpr> ^name abpr) 
+(<dsc> ^name dsc)
+(<tcaa> ^name tcaa)
+
+
+**************************
+
+
+(<physical> ^name physical ^priority 1)
+(<circulation> ^name circulation ^prioritization <physical>)
+(<abpr> ^name abpr ^omahaproblem <circulation>)
+(<root> ^name root <abpr>)

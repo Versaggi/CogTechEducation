@@ -1,0 +1,175 @@
+##!
+# @file
+# Professional Athlete
+# @created by Matthew Versaggi 20201230
+
+
+### A simple prepared-rested problem space and operators
+### 
+### The code supplied has these characteristics:
+###   - The operators Train & Rest are proposed if they're 
+###     applicable. that is, Train if (^prepared no), Recover if (^rest no)
+###   - There is an explicit ^desired on the goal
+###   - which is tested by the goal attainment rule
+### 
+
+### 
+###    I.    Propose the top space
+###
+### The code in this section proposes a simple space to work in
+
+### simple state to start working in: IF no Impasses and a superstate of NIL 
+
+
+sp {pr*propose-space*pr
+  (state <s> -^impasse ^superstate nil)
+  -->
+  (<s> ^name pr-state)
+  (<s> ^problem-space <p> ^desired <d>)
+  (<p> ^name prepared-recovered)
+  (<d> ^prepared yes)
+  (<d> ^recovered yes)
+  (<s> ^prepared no ^recovered no)
+}
+
+
+###
+###    II.    Propose the main operators
+###
+### The code in this section proposes the two operators Train and Rest.
+
+### The third production creates a preference for choosing between them.
+
+## Propose Train: If the athlete isn't prepared then train.
+sp {pr*propose-op*train
+  (state <s> ^problem-space.name prepared-recovered )
+  (<s> ^prepared no)
+  -->
+  (<s> ^operator <o>)
+  (<o> ^name train)}
+
+
+## Propose Rest. If the athlete isn't Recovered then rest.
+sp {pr*propose-op*rest
+  (state <s> ^problem-space.name prepared-recovered )
+  (<s> ^recovered no)
+  -->
+  (<s> ^operator <o>)
+  (<o> ^name rest)}
+
+
+### Preference for choosing between operators (Train & Rest): Favor Train
+sp {pr*compare*train*better*rest
+  (state <s> ^desired <d> ^problem-space.name prepared-recovered )
+  (<d> ^prepared yes)
+  (<s> ^operator <op-train> +)
+  (<op-train> ^name train)
+  (<d> ^recovered yes)
+  (<s> ^operator <op-rest> +)
+  (<op-rest> ^name rest)
+  -->
+  (<s> ^operator <op-train> > <op-rest>)}
+
+
+###
+###    III.    Implement the main operators
+###
+
+## Implement the operators with productions that modify the state once
+## the operators have been selected, and then terminate them after
+## they have done
+
+## Note: We make the new value acceptable and reject the previous value.
+
+## Implement Train
+## The reconsider preference effectively terminates the operator on 
+## the next decision cycle after it has done what its supposed to do.
+## Swap our YES with NO after this cycle ends
+
+sp {pr*apply-op*train
+  (state <s>  ^operator <o>)
+  (<o> ^name train)
+  (<s> ^prepared no)
+  -->
+  (write (crlf) |         Preparing: train, train... |)
+  (<s> ^prepared yes + no -)}
+
+sp {pr*terminate*train
+  (state <s> ^operator <o>)
+  (<o> ^name train)
+  (<s> ^prepared yes)
+  -->
+ (<s> ^operator <o>)}
+
+
+## Implement Rest
+## Note: just making the new value acceptable and best, to
+## overwrite any value (or no value) on the state, is not a wise 
+## idea (if the another operator applies and makes another attribute
+## best you will get ties and lose.  
+## Swap our YES with NO after this cycle ends
+
+sp {pr*apply-op*rest
+  (state <s>   ^operator <o>)
+  (<o> ^name rest)
+  (<s> ^recovered no)
+  -->
+  (write (crlf) |         Recovering: rest, rest... |)
+  (<s> ^recovered yes + no -)}
+
+sp {pr*terminate*rest
+  (state <s>  ^operator <o>)
+  (<o> ^name rest)
+  (<s> ^recovered yes)
+  --> 
+ (<s> ^operator <o>)}
+
+
+###
+###    IV.    Noticing when done.
+###
+### This code terminates the problem solving when the goal is reached.
+
+
+## How to tell if you can stop - your desired's and state's are equal.
+
+sp {pr*evaluate*state*success
+  (state <s> ^desired <d> )
+  (<d> ^prepared <val>)
+  (<s> ^prepared <val>)
+  (<d> ^recovered <val>)
+  (<s> ^recovered <val>)  
+  -->
+  (<s> ^success <d>)}
+
+
+## One of the default rules is brought in to notice that we are 
+## finished.  (Slightly modified to be more compact and less general.)
+
+sp {default*top-goal*halt*state*success
+    :default
+  (state <s>  ^desired <eb>) 
+  (<s> ^success <eb>)
+  -->
+  (write (crlf)  |  goal for  | <s>  | achieved | )
+  (halt)}
+
+
+
+
+###---------------------------------------------------------------
+###                       END OF FILE
+###---------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+

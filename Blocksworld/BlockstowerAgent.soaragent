@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soaragent>
+  <startfile path="blockstower.soar" />
+  <members>
+    <member path="blockstower.soar" />
+    <member path="blockstower_enhanced.soar" />
+  </members>
+</soaragent>
+

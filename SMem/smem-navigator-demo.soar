@@ -1,0 +1,133 @@
+### README ##########################################################################
+# This file demonstrates the SMEM query and the SMEM retrieve commands.
+# SMEM is initialized with a loop of three objects.
+# The agent begins by using ^query to get one of these three.
+# The agent then uses ^retrieve to get the next item in the loop sequence.
+# This retrieve cycles will continue forever, since the loop never ends.
+# (Refer to the Soar manual for details on the SMEM structures and how to use them.)
+#
+#######
+# AUTHOR: Bryan Stearns
+# DATE:   2021-01-14
+#####################################################################################
+
+
+smem --set learning on
+
+smem --add {
+	(<a> ^links-to <b>
+	     ^name A)
+	(<b> ^links-to <c>
+	     ^name B)
+	(<c> ^links-to <a>
+	     ^name C)
+}
+
+#####################################################################################
+
+###
+# OPERATOR: QUERY-ROOT
+# Use an query command to get the first item in the loop from smem
+###
+sp {propose*query-root
+	(state <s> ^superstate nil
+			-^name)
+-->
+	(<s> ^operator <o> +)
+	(<o> ^name query-root)
+}
+sp {apply*query-root
+	(state <s> ^operator.name query-root
+				^smem.command <scmd>)
+-->
+	(<s> ^name smem-example)
+	(<scmd> ^query <q>)
+	(<q> ^name A)
+}
+
+
+###
+# OPERATOR: COLLECT-ROOT
+# Place the query result onto the topstate and remove the query command.
+###
+sp {propose*collect-root
+	"If there is a successful result and no current-item yet, it must be the initial query result."
+	(state <s> ^name smem-example
+			^smem.result.success <cue>
+			-^current-item)
+-->
+	(<s> ^operator <o> +)
+	(<o> ^name collect-root)
+}
+sp {apply*collect-root
+	"Collect the query result and remove the query command to free up the smem link."
+	(state <s> ^operator.name collect-root
+		^smem <smem>)
+	(<smem> ^command <scmd>
+			^result.retrieved <lti>)
+	(<scmd> ^query <q>)
+	(<lti> ^name <name>)
+-->
+	(<s> ^current-item <lti>)
+	(<scmd> ^query <q> -)
+	(write |Collected | <name> | (queried)| (crlf))
+}
+
+
+###
+# OPERATOR: RETRIEVE-NEXT
+# Use a retrieve command to get the next item in the loop from smem
+###
+sp {propose*retrieve-next
+	(state <s> ^name smem-example
+			^current-item <cur>
+			^smem.result <sres>)
+	-(<sres> ^<< success failure >> )
+	(<cur> ^links-to <next>)
+-->
+	(<s> ^operator <o> +)
+	(<o> ^name retrieve-next
+		^next-lti <next>)
+}
+sp {apply*retrieve-next
+	(state <s> ^operator <o>
+			^smem.command <scmd>)
+	(<o> ^name retrieve-next
+		^next-lti <next>)
+-->
+	(<scmd> ^retrieve <next>)
+}
+
+
+###
+# OPERATOR: COLLECT-NEXT
+# Replace current-item on the topstate with the retrieved item and remove the retrieve command.
+###
+sp {propose*collect-next
+	"If there is a result from a retrieve command, collect it."
+	(state <s> ^name smem-example
+			^smem <smem>)
+	(<smem> ^command <scmd>
+			^result <sres>)
+	(<scmd> ^retrieve <lti>)
+	(<sres> ^success <lti>)
+-->
+	(<s> ^operator <o> +)
+	(<o> ^name collect-next)
+}
+sp {apply*collect-next
+	"Collect the retrieve result and remove the retrieve command to free up the smem link."
+	(state <s> ^operator.name collect-next
+			^current-item <cur>
+			^smem <smem>)
+	(<smem> ^command <scmd>
+			^result.retrieved <lti-new-instance>)		# The retrieved ID will be linked to the same LTI in SMEM as <lti-old-instance>, but will be a new unique WM ID.
+	(<scmd> ^retrieve <lti-old-instance>)
+	(<lti-new-instance> ^name <name>)
+-->
+	(<s> ^current-item <cur> -
+		^current-item <lti-new-instance>)
+	(<scmd> ^retrieve <lti-old-instance> -)
+	(write |Collected | <name> | (retrieved)| (crlf))
+}
+

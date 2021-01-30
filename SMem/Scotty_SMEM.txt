@@ -1,0 +1,48 @@
+# OMAHA SYSTEM DB
+
+(<odb> 	^omaha-sign-and-symptom <sign1>
+		^omaha-sign-and-symptom <sign2>)
+
+(<sign1> ^name |Abnormal Blood Pressure Reading|
+		 ^omaha-problem <om-prob1>)
+(<sign2> ^name |Urgency/Frequency|
+		 ^omaha-problem <om-prob2>)
+
+
+(<om-prob1> ^name |CIRCULATION|
+			^intervention <int1>
+			^intervention <int2>
+			...)
+(<om-prob2> ^name |URINARY FUNCTION|)
+
+
+
+
+(<int1> ^category |Case Management|
+		^target |Durable Medical Equipment|
+		^care-descriptor |blood pressure monitor|)
+(<int2> ^category |Treatments and Procedures|
+		^target |Screening Procedures|
+		^care-descriptor |vital signs/blood pressure|)
+
+
+# INDIVIDUAL:
+
+(<ehr> 	^member-number |abc123|
+		^age 99
+		^sex |Male|
+		^member-problem <abc123-prob-1>
+		^member-problem <abc123-prob-2>
+		...)
+(<abc123-prob-1> ^omaha-problem <om-prob1>  # This link lets the agent access interventions under the problem object.
+				 ^kbs <abc123-prob-1-kbs>)
+(<abc123-prob-1-kbs> 	^knowledge 1
+						^behavior 1
+						^status 1)
+
+
+# Priority object: TBD
+
+# Objects that represent current reasoning: TBD (But this will probably at least need to record the selected "^operator" structure in some form.)
+
+# Objects that record temporal sequence of reasoning: TBD

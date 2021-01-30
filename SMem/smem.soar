@@ -1,0 +1,171 @@
+##!
+# @file
+#
+# @created by Matthew Versaggi 20210110
+
+
+
+# Rules to accompany the Semantic Memory tutorial
+# that illustrates simple examples of *all*
+# agent interactions with semantic memory.
+
+
+### Nothing happems with Semantic Memory until the service is enabled
+### Enable Semantic Memory
+
+smem --set learning on
+
+
+### Propose an operator 'init' to initialize the state
+
+sp {propose*init
+   (state <s> ^superstate nil
+             -^name)
+-->
+   (<s> ^operator <op> +)
+   (<op> ^name init)
+}
+
+
+### Apply the 'init' rule and add informationt to WM.
+
+sp {apply*init
+   (state <s> ^operator.name init
+              ^smem.command <cmd>)
+-->
+   (<s> ^name friends)
+   (<cmd> ^store <a> <b> <c>)
+   (<a> ^name alice ^friend <b>)
+   (<b> ^name bob ^friend <a>)
+   (<c> ^name charley)
+}
+
+
+
+### Propose Non-Cue-Based Retrieval
+### Used with a *KNOWN* LT Identifier
+
+sp {propose*ncb-retrieval
+   (state <s> ^name friends
+              ^smem.command <cmd>)
+   (<cmd> ^store <a>)
+   (<a> ^name anna
+        ^friend <f>)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name ncb-retrieval
+         ^friend <f>)
+}
+
+
+### Apply Non-Cue-Based Retrieval
+### Used with a *KNOWN* LT Identifier
+### Command '^Retrieve'
+
+sp {apply*ncb-retrieval*retrieve
+   (state <s> ^operator <op>
+              ^smem.command <cmd>)
+   (<op> ^name ncb-retrieval
+         ^friend <f>)
+   (<cmd> ^store <a>)
+-->
+   (<cmd> ^store <a> -
+          ^retrieve <f>)
+}
+
+
+### Apply Non-Cue-Based Retrieval CLEAN
+### Clean up after retrieval from SMem into WM.
+
+sp {apply*ncb-retrieval*clean
+   (state <s> ^operator <op>
+              ^smem.command <cmd>)
+   (<op> ^name ncb-retrieval
+         ^friend <f>)
+   (<f> ^<attr> <val>)
+-->
+   (<f> ^<attr> <val> -)
+}
+
+
+
+### Propose Cue-Based Retrieval
+### Used with a *UNKNOWN* LT Identifier
+
+sp {propose*cb-retrieval
+   (state <s> ^name friends
+              ^smem.command <cmd>)
+   (<cmd> ^retrieve)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name cb-retrieval)
+}
+
+
+### Apply Cue-Based Retrieval
+### Used with a *UNKNOWN* LT Identifier
+### Command '^Query'
+
+sp {apply*cb-retrieval
+   (state <s> ^operator <op>
+              ^smem.command <cmd>)
+   (<op> ^name cb-retrieval)
+   (<cmd> ^retrieve <lti>)
+-->
+   (<cmd> ^retrieve <lti> -
+          ^query <cue>)
+   (<cue> ^name <any-name>
+          ^friend <lti>)
+}
+
+
+
+### Propose the MOD operator 
+# <cmd> is the command link of a state
+
+sp {propose*mod
+   (state <s> ^name friends ^smem.command <cmd>)
+   (<cmd> ^store <a> <b> <c>)
+   (<a> ^name alice)
+   (<b> ^name bob)
+   (<c> ^name charley)
+-->
+   (<s> ^operator <op> +)
+   (<op> ^name mod)
+}
+
+
+### Apply the MOD rule
+### If there is SMEM accessabel on the command link of
+### following configutation, then modify 'Alice' to 'Anna'.
+
+sp {apply*mod
+   (state <s> ^operator.name mod ^smem.command <cmd>)
+   (<cmd> ^store <a> <b> <c>)
+   (<a> ^name alice)
+   (<b> ^name bob)
+   (<c> ^name charley)
+-->
+   (<a> ^name alice -)
+   (<a> ^name anna ^friend <c>)
+   (<cmd> ^store <b> -)
+   (<cmd> ^store <c> -)
+}
+
+
+
+### Conclude the SOAR Program.
+
+
+sp {done
+   (state <s> ^smem <smem>)
+   (<smem> ^command.query <q>
+           ^result.<status> <q>)
+-->
+   (write (crlf) |The Tutorial has ended.|)
+   (write (crlf) | . | | . | )
+   (halt)
+}
+
+
+

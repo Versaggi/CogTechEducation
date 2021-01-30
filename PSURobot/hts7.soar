@@ -1,0 +1,211 @@
+##!
+# @file
+#
+# @created by Matthew Versaggi 20201230
+
+### Table of contents, ht.s7
+###
+###    i.    Some simple things to help beginners
+###    I.    Propose the top space
+###    II.    Propose the main operators
+###    II.    Propose the main operators
+###    III.    Implement the main operators
+###    IV.    Noticing when full
+###    V.    Operator Set-up
+###    VI.    Better object traces
+###
+### Copyright 1994.  F. E. Ritter & R. M. Young.
+###
+### Last substantially modified: 10Feb96 -FER
+### With useful bug fixes from Kate Cook.
+###
+### 5/7/95   Gary Jones - NNPSCM conversion.
+###
+### 27/7/95  Gary Jones - Altered references to <g> to be <s>.
+###                       For example, state <g> is now state <s>.
+###                       Just to make it easier to understand.
+###                       Also put in learn -off (because it should be).
+###
+### 12/30/2000 Matt Versaggi - modified to work on SOAR V 9.6+
+###
+###
+### Saved as Text Only so that it can be loaded into Soar.
+### 
+### A simple hungry-thirsty problem space and operators
+### 
+### The code supplied has these characteristics:
+###   - The operators Eat & Drink are proposed iff they're 
+###     applicable. that is, Eat if (^hungry yes), Drink if (^thirsty yes)
+###   - There is an explicit ^desired on the goal
+###   - which is tested by the goal attainment rule
+###   - There are hand-written control chunks giving Eat best
+### 
+
+
+
+### 
+###    I.    Propose the top space
+###
+### The code in this section proposes a simple space to work in, and a
+
+### simple state to start working in.
+## MRV Added in 'thirsty' 12/30/2000
+
+sp {ht*propose-space*ht
+  (state <s> -^impasse ^superstate nil)
+  -->
+  (<s> ^name ht-state)
+  (<s> ^problem-space <p> ^desired <d>)
+  (<p> ^name hungry-thirsty)
+  (<d> ^hungry no)
+  (<d> ^thirsty no)
+  (<s> ^thirsty yes ^hungry yes)
+}
+
+
+## Propose the top state
+## simple way to set up the top-state with a separate production
+## sp {ht*propose-state*ht
+##   (state <s> ^problem-space.name hungry-thirsty)
+##   -->
+##   (<s> ^name ht-state)
+##   (<s> ^thirsty yes ^hungry yes)}
+
+
+
+###
+###    II.    Propose the main operators
+###
+### The code in this section proposes the two operators eat and drink.
+
+### The third production creates a preference for choosing between
+### them.
+
+
+## Propose eat.
+sp {ht*propose-op*eat
+  (state <s> ^problem-space.name hungry-thirsty )
+  (<s> ^hungry yes)
+  -->
+  (<s> ^operator <o>)
+  (<o> ^name eat)}
+
+
+## Propose drink.
+sp {ht*propose-op*drink
+  (state <s> ^problem-space.name hungry-thirsty )
+  (<s> ^thirsty yes)
+  -->
+  (<s> ^operator <o>)
+  (<o> ^name drink)}
+
+## Eat/drink is better if you are hungry/thirsty.
+## MRV Added in 'thirsty' 12/30/2000
+sp {ht*compare*eat*better*drink
+  (state <s> ^desired <d> ^problem-space.name hungry-thirsty)
+  (<d> ^hungry no)
+  (<s> ^operator <op-eat> +)
+  (<op-eat> ^name eat)
+  (<d> ^thirsty no)
+  (<s> ^operator <op-drink> +)
+  (<op-drink> ^name drink)
+  -->
+  (<s> ^operator <op-eat> > <op-drink>)}
+
+
+###
+###    III.    Implement the main operators
+###
+
+## Implement the operators with productions that modify the state once
+## the operators have been selected, and then terminate them after
+## they have done
+
+## what they need to do
+##
+## Note: We make the new value acceptable and reject the previous
+## value.
+
+##
+## The reconsider preference effectively terminates the operator on 
+## the next decision cycle after it has done what its supposed to do.
+## Swap our YES with NO after this cycle ends
+
+sp {ht*apply-op*eat
+  (state <s>  ^operator <o>)
+  (<o> ^name eat)
+  (<s> ^hungry yes)
+  -->
+  (write (crlf) |         Eating: chomp chomp... |)
+  (<s> ^hungry yes - no +)}
+
+sp {ht*terminate*eat
+  (state <s> ^operator <o>)
+  (<o> ^name eat)
+  (<s> ^hungry no)
+  -->
+ (<s> ^operator <o>)}
+#  (<s> ^operator <o> @)} OLD
+
+
+## Implement drink
+## Note: just making the new value acceptable and best, to
+## overwrite any value (or no value) on the state, is not a wise 
+## idea (if the another operator applies and makes another attribute
+## best you will get ties and lose.  
+## Swap our YES with NO after this cycle ends
+
+sp {ht*apply-op*drink
+  (state <s>   ^operator <o>)
+  (<o> ^name drink)
+  (<s> ^thirsty yes)
+  -->
+  (write (crlf) |         Drinking: glug glug... |)
+  (<s> ^thirsty no + yes -)}
+
+sp {ht*terminate*drink
+  (state <s>  ^operator <o>)
+  (<o> ^name drink)
+  (<s> ^thirsty no)
+  --> 
+ (<s> ^operator <o>)}
+#  (<s> ^operator <o> @)} OLD
+
+
+###
+###    IV.    Noticing when full
+###
+### This code terminates the problem solving when the goal is reached.
+
+
+## How to tell if you can stop
+## Added in the 'thirsty' eval 12/30/2000
+
+sp {ht*evaluate*state*success
+  (state <s> ^desired <d> )
+  (<d> ^hungry <val>)
+  (<s> ^hungry <val>)
+  (<d> ^thirsty <val>)
+  (<s> ^thirsty <val>)  
+  -->
+  (<s> ^success <d>)}
+
+
+## One of the default rules is brought in to notice that we are 
+## finished.  (Slightly modified to be more compact and less general.)
+
+sp {default*top-goal*halt*state*success
+    :default
+  (state <s>  ^desired <eb>) 
+  (<s> ^success <eb>)
+  -->
+  (write (crlf)  |  goal for  | <s>  | achieved | )
+  (halt)}
+
+
+
+
+###---------------------------------------------------------------
+###                       END OF FILE
+###---------------------------------------------------------------
+

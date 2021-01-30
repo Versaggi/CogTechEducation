@@ -1,0 +1,1205 @@
+##!
+# @file
+#
+
+### README ##########################################################################
+# This file creates the directed graph of the Prediabeted POC Omaha Taxonomy 
+# Semantic Memory elements we wish to populate the SOAR agent with. This is 
+# limited to just the Omaha Signs & Symptoms, Omaha Problems and their Priority in
+# the reasoning process.
+#
+# At the end of the file are example Operators that illustrate how to query the 
+# SOAR SMem Module and ask it for the root of this structure. It also provides
+# examples of how to access any arbitrary part of that structure when needed. 
+# 
+#####################################################################################
+
+
+######
+#
+# AUTHOR: Matthew Versaggi
+# DATE:   Jan-18th, 2021
+#
+#
+#
+######
+
+
+
+###
+### Preload into Semantic Memory the Omaha Prediabetes taxonomy of interest to the POC
+###
+
+### Nothing happems with Semantic Memory until the service is enabled
+### Enable Semantic Memory
+smem --enable
+
+### Load the Omaha Prediabetes taxonomy into Semantic Memory
+#
+# This block of code continues until the comment tag below:
+# 'END Omaha POC SMem Population'
+#
+
+smem --add {
+
+# BEGIN Omaha POC SMem Population
+
+###
+### Top Object(s)
+###
+
+## ROOT 
+# This is the top of the directed graph being created that will reside in SOAR's Semantic Memory
+# This will make it easy to grab the entire structure when needed.
+#
+(<root> ^name root)
+
+
+
+
+###
+### (Bottom of the Directed Graph)
+###
+
+
+
+
+
+####
+#### CARE DESCRIPTOR (CD) [60]
+####
+
+(<notifyproviders> ^name notifyproviders ^value |When to Notify Providers|)
+(<bloodpressure> ^name bloodpressure ^value |Blood Pressure|)
+(<vitalsignsbloodpressure> ^name vitalsignsbloodpressure ^value |Vital Signs/Blood Pressure|)
+(<bloodpressuremonitor> ^name bloodpressuremonitor ^value |Blood Pressure Monitor|)
+(<skincolor> ^name skincolor ^value |Skin Color|)
+(<idchangefactorsincreasesymptoms> ^name idchangefactorsincreasesymptoms ^value |Identify/Change Factors that Increase Symptoms|)
+(<increriskhistoryofgestdiabetes> ^name increriskhistoryofgestdiabetes ^value |Increased Risk for Diabetes: History of Gestational Diabetes|)
+(<evidenceofdiseaseinfection> ^name evidenceofdiseaseinfection ^value |Eevidence of Disease/Infection|)
+(<urinecolorfreqamount> ^name urinecolorfreqamount ^value |Urine Color, Frequency, and Aamount|)
+(<evidenceurinarytractinfection> ^name evidenceurinarytractinfection ^value |Evidence of Urinary Tract Infection|)
+(<urine> ^name urine ^value |Urine|)
+(<kidneyfunctionscreeneval> ^name kidneyfunctionscreeneval ^value |Kidney Function Screening/Evaluation|)
+(<decreasedsensation> ^name decreasedsensation ^value |Decreased Sensation/Numbness/Tingling|)
+(<skinintegrity> ^name skinintegrity ^value |Skin Integrity|) 
+(<selfcarefoottoenail> ^name selfcarefoottoenail ^value |Self Care: Daily Foot Inspections/Proper Toenail Care|)
+(<lotionoil> ^name lotionoil ^value |Lotion/Oil|) 
+(<dressingsupplies> ^name dressingsupplies ^value |Dressing Supplies|) 
+(<recommendedtechnique> ^name recommendedtechnique ^value |Recommended Technique|) 
+(<wounddiameterdepth> ^name wounddiameterdepth ^value |Wound Diameter/Depth|) 
+(<erectiledysfunction> ^name erectiledysfunction ^value |Erectile Dysfunction|)
+(<decreasedlibidoimpotency> ^name decreasedlibidoimpotency ^value |Decreased Libido Impotency|)
+(<identifyavailableproviders> ^name identifyavailableproviders ^value |Identify Available Providers|)
+(<anxiety> ^name anxiety ^value |Anxiety|)
+(<therapy> ^name therapy ^value |Therapy|)
+(<depression> ^name depression ^value |Depression|)
+(<wellnessprogramcoaching> ^name wellnessprogramcoaching ^value |Wellness Program/Coaching|)
+(<typeamount> ^name typeamount ^value |Type/Amount|)
+(<purposebenefits> ^name purposebenefits ^value |Purpose/Benefits|)
+(<suggestedexercisepgm> ^name suggestedexercisepgm ^value |Suggested Exercise Program|)
+(<adequateappropriate> ^name adequateappropriate ^value |Adequate/Appropriate|)
+(<healthysleeppatterns> ^name healthysleeppatterns ^value |Healthy Sleep Patterns|)
+(<symptommgtsleepapnea> ^name symptommgtsleepapnea ^value |Symptom Management: Sleep Apnea|)
+(<incriskdiabetesobstructsleepapnea> ^name incriskdiabetesobstructsleepapnea ^value |Increased Risk for Diabetes: Obstructive Sleep Apnea|)
+(<sleepclinics> ^name sleepclinics ^value |Sleep Clinics|)
+(<eatingpatternsbehaviors> ^name eatingpatternsbehaviors ^value |Eating Patterns/Behaviors|)
+(<aftereatinghabits> ^name aftereatinghabits ^value |alter eating habits|)
+(<bodymassindex> ^name bodymassindex ^value |Body Mass Index (BMI)|)
+(<foodchoicesportioncontrol> ^name foodchoicesportioncontrol ^value |Food Choices, Portion Control, Food Quality|)
+(<readinglabelsingredients> ^name readinglabelsingredients ^value |Reading Labels: Ingredients, Carbs, Calories, Fat, Sodium|)
+(<benefitsofweightloss> ^name benefitsofweightloss ^value |Benefits of Weight Loss|)
+(<weightmanagement> ^name weightmanagement ^value |Weight Management|)
+(<bodychanges> ^name bodychanges ^value |Body Changes|)
+(<expectedweightchanges> ^name expectedweightchanges ^value |Expected weight changes|) 
+(<communitybasedresourcesscvs> ^name communitybasedresourcesscvs ^value |Community based Resources/Services|)
+(<adequateappropriatefamilyfriends> ^name adequateappropriatefamilyfriends ^value |Adequate/appropriate with family/friends|)
+(<importancesupportfamilyfriends> ^name importancesupportfamilyfriends ^value |Importance of support of Family/Friends/Neighbors|)
+(<affordablefoodoptions> ^name affordablefoodoptions ^value |Affordable food options/resources|)
+(<abilitytomeetneeds> ^name abilitytomeetneeds ^value |Ability to meet needs|)
+(<educationsupportservices> ^name educationsupportservices ^value |Education support services|)
+(<identifyavailableresources> ^name identifyavailableresources ^value |Identify available resources|)
+(<resourcesforgoodsservicesinfo> ^name resourcesforgoodsservicesinfo ^value |Resources for goods, Services and Information|)
+(<expressionofneeds> ^name expressionofneeds ^value |expression of needs|)
+(<procedurestoobtainservices> ^name procedurestoobtainservices ^value |Procedures to obtain services|)
+(<purposebenefits> ^name purposebenefits ^value |Purpose/Benefits|)
+(<familyhistory> ^name familyhistory ^value |Family History|)
+(<increriskhistoryofdiabetespos> ^name increriskhistoryofdiabetespos ^value |Increased Risk for Diabetes: History of Polycystic Ovarian Syndrome|)
+(<symptommgtprevention> ^name symptommgtprevention ^value |Symptom Management and Prevention|)
+(<dehydration> ^name dehydration ^value |Dehydration|)
+
+
+
+####
+#### TARGET (TG) [27]
+####
+
+(<signssymptomsphysical> ^name signssymptomsphysical  ^value |Signs/Symptoms-Physical| )
+(<screeningprocedures> ^name screeningprocedures  ^value |Screening Procedures| )
+(<durablemedequip> ^name durablemedequip  ^value |Durable Medical Equipment|)
+(<cardiaccare> ^name cardiaccare  ^value |Cardiac Care|)
+(<anatomyphysiology> ^name anatomyphysiology  ^value |Anatomy Physiology|)
+(<specimencollection> ^name specimencollection  ^value |Specimen Collection|)
+(<laboratoryfindings> ^name laboratoryfindings  ^value |Laboratory Findings|)
+(<skincare> ^name skincare  ^value |Skin Care|)
+(<personalhygiene> ^name personalhygiene  ^value |Personal Hygiene|)
+(<supplies> ^name supplies  ^value |Supplies|)
+(<dressingchangewoundcare> ^name dressingchangewoundcare  ^value |Dressing Change/Wound Care|)
+(<behavioralhealthcare> ^name behavioralhealthcare  ^value |Behavioral Health Care|)
+(<stressmanagement> ^name stressmanagement  ^value |Stress Management|)
+(<signssymptomsmentalemotional> ^name signssymptomsmentalemotional  ^value |Signs/Symptoms-Mental/Emotional|)
+(<socialworkcounselingcare> ^name socialworkcounselingcare  ^value |Social Work/Counseling Care|)
+(<copingskills> ^name copingskills  ^value |Coping Skills|)
+(<exercises> ^name exercises  ^value |Exercises|)
+(<wellness> ^name wellness  ^value |Wellness|)
+(<restsleep> ^name restsleep  ^value |Rest/Sleep|)
+(<othercommunityresources> ^name othercommunityresources  ^value |Other Community Resources|)
+(<dietarymanagement> ^name dietarymanagement  ^value |Dietary Management|)
+(<interaction> ^name interaction  ^value |Interaction|)
+(<supportsystem> ^name supportsystem  ^value |Support System|)
+(<finances> ^name finances  ^value |Finances|)
+(<education> ^name education  ^value |Education|)
+(<communication> ^name communication  ^value |Communication|)
+(<genetics> ^name genetics  ^value |Genetics|)
+
+
+
+   
+   
+####
+#### Category (CG) [4]
+####
+
+(<teachguidecounsel> ^name teachguidecounsel ^value |Teaching, Guidance, and Counseling|)
+(<surveillance> ^name surveillance ^value |Surveillance|)
+(<treatments_n_procedures> ^name treatments_n_procedures ^value |Treatments and Procedures|)
+(<casemanagement> ^name casemanagement ^value |Case Management|) 
+
+
+
+
+##########
+########## INTERVENTIONS [23 Groups]
+##########
+
+
+
+### INTERVENTION: 'Abnormal Blood Pressure Reading'  [abpr]
+
+(<abpr_intervention-1> ^name abpr_intervention
+                  ^category <casemanagement>
+                  ^target <durablemedequip>
+                  ^caredescriptor <bloodpressuremonitor>)
+
+(<abpr_intervention-2> ^name abpr_intervention
+                  ^category <treatments_n_procedures>
+                  ^target <screeningprocedures>
+                  ^caredescriptor <vitalsignsbloodpressure>)
+
+(<abpr_intervention-3> ^name abpr_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <bloodpressure>)
+
+(<abpr_intervention-4> ^name abpr_intervention
+                  ^category <teachguidecounsel>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <bloodpressure>)     
+
+(<abpr_intervention-5> ^name abpr_intervention
+                  ^category <teachguidecounsel>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <notifyproviders>)   
+
+
+### INTERVENTION: 'Discoloration of Skin/Cyanosis'  [dsc]
+   
+(<dsc_intervention-1> ^name dsc_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <skincolor>)
+
+(<dsc_intervention-2> ^name dsc_intervention
+                  ^category <teachguidecounsel>
+                  ^target <cardiaccare>
+                  ^caredescriptor <idchangefactorsincreasesymptoms>)
+
+(<dsc_intervention-3> ^name dsc_intervention
+                  ^category <teachguidecounsel>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <notifyproviders>)   
+
+
+### INTERVENTION: 'Temperature Change in Affected Area' [tcaa]
+   
+(<tcaa_intervention-1> ^name tcaa_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <skincolor>)
+
+(<tcaa_intervention-2> ^name tcaa_intervention
+                  ^category <teachguidecounsel>
+                  ^target <cardiaccare>
+                  ^caredescriptor <idchangefactorsincreasesymptoms>)
+
+(<tcaa_intervention-3> ^name tcaa_intervention
+                  ^category <teachguidecounsel>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <notifyproviders>)   
+
+
+
+### INTERVENTION: 'Prenatal Complications/Preterm Labor' [pncpl]
+   
+(<pncpl_intervention-1> ^name pncpl_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <evidenceofdiseaseinfection>)
+
+(<pncpl_intervention-2> ^name pncpl_intervention
+                  ^category <teachguidecounsel>
+                  ^target <anatomyphysiology>
+                  ^caredescriptor <increriskhistoryofgestdiabetes>)
+
+
+### INTERVENTION: 'Urgency/Frequency (Urination)' [ufu]
+
+(<ufu_intervention-1> ^name ufu_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <urinecolorfreqamount>)
+
+(<ufu_intervention-2> ^name ufu_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <evidenceurinarytractinfection>)
+
+(<ufu_intervention-3> ^name ufu_intervention
+                  ^category <treatments_n_procedures>
+                  ^target <specimencollection>
+                  ^caredescriptor <urine>)
+
+(<ufu_intervention-4> ^name ufu_intervention
+                  ^category <teachguidecounsel>
+                  ^target <laboratoryfindings>
+                  ^caredescriptor <kidneyfunctionscreeneval>)  
+
+   
+### INTERVENTION: 'Decreased Sensation' [ds] 
+
+(<ds_intervention-1> ^name ds_intervention
+                  ^category <teachguidecounsel>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <idchangefactorsincreasesymptoms>)
+
+(<ds_intervention-2> ^name ds_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <decreasedsensation>) 
+
+
+   
+### INTERVENTION: 'Excessively Dry Skin'  [eds] 
+
+(<eds_intervention-1> ^name eds_intervention
+                  ^category <surveillance>
+                  ^target <skincare>
+                  ^caredescriptor <skinintegrity>)
+
+(<eds_intervention-2> ^name eds_intervention
+                  ^category <teachguidecounsel>
+                  ^target <personalhygiene>
+                  ^caredescriptor <selfcarefoottoenail>)
+   
+(<eds_intervention-3> ^name eds_intervention
+                  ^category <teachguidecounsel>
+                  ^target <skincare>
+                  ^caredescriptor <lotionoil>)
+
+(<eds_intervention-4> ^name eds_intervention
+                  ^category <teachguidecounsel>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <notifyproviders>)    
+   
+   
+
+### INTERVENTION: 'Lesion/Pressure Ulcer'  [lpu] 
+   
+(<lpu_intervention-1> ^name lpu_intervention
+                  ^category <casemanagement>
+                  ^target <supplies>
+                  ^caredescriptor <dressingsupplies>)
+
+(<lpu_intervention-2> ^name lpu_intervention
+                  ^category <treatments_n_procedures>
+                  ^target <dressingchangewoundcare>
+                  ^caredescriptor <recommendedtechnique>)
+   
+(<lpu_intervention-3> ^name lpu_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <wounddiameterdepth>)
+
+(<lpu_intervention-4> ^name lpu_intervention
+                  ^category <teachguidecounsel>
+                  ^target <dressingchangewoundcare>
+                  ^caredescriptor <recommendedtechnique>)  
+   
+(<lpu_intervention-5> ^name lpu_intervention
+                  ^category <teachguidecounsel>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <notifyproviders>) 
+
+
+   
+### INTERVENTION: 'Impotency' [imp]   
+   
+(<imp_intervention-1> ^name imp_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <erectiledysfunction>)
+
+(<imp_intervention-2> ^name imp_intervention
+                  ^category <teachguidecounsel>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <decreasedlibidoimpotency>) 
+    
+
+### INTERVENTION: 'Cracked Lips/Dry Mouth' [cldm]   
+   
+     
+(<cldm_intervention-1> ^name cldm_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <dehydration>)
+
+(<cldm_intervention-2> ^name cldm_intervention
+                  ^category <teachguidecounsel>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <dehydration>)
+   
+(<cldm_intervention-3> ^name cldm_intervention
+                  ^category <teachguidecounsel>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <notifyproviders>)
+
+
+
+ ### INTERVENTION: 'Apprehension/Undefined Fear'  [auf] 
+   
+(<auf_intervention-1> ^name auf_intervention
+                  ^category <casemanagement>
+                  ^target <behavioralhealthcare>
+                  ^caredescriptor <identifyavailableproviders>)
+
+(<auf_intervention-2> ^name auf_intervention
+                  ^category <surveillance>
+                  ^target <stressmanagement>
+                  ^caredescriptor <adequateappropriate>)
+   
+(<auf_intervention-3> ^name auf_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsmentalemotional>
+                  ^caredescriptor <anxiety>)
+
+(<auf_intervention-4> ^name auf_intervention
+                  ^category <treatments_n_procedures>
+                  ^target <socialworkcounselingcare>
+                  ^caredescriptor <therapy>)  
+   
+(<auf_intervention-5> ^name auf_intervention
+                  ^category <teachguidecounsel>
+                  ^target <copingskills>
+                  ^caredescriptor <idchangefactorsincreasesymptoms>)   
+   
+   
+   
+### INTERVENTION: 'Sadness/Hopelessness/Decreases Self-Esteem'  [shdse] 
+   
+(<shdse_intervention-1> ^name shdse_intervention
+                  ^category <casemanagement>
+                  ^target <behavioralhealthcare>
+                  ^caredescriptor <identifyavailableproviders>)
+
+(<shdse_intervention-2> ^name shdse_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsmentalemotional>
+                  ^caredescriptor <depression>)
+   
+(<shdse_intervention-3> ^name shdse_intervention
+                  ^category <surveillance>
+                  ^target <stressmanagement>
+                  ^caredescriptor <adequateappropriate>)
+
+(<shdse_intervention-4> ^name shdse_intervention
+                  ^category <treatments_n_procedures>
+                  ^target <socialworkcounselingcare>
+                  ^caredescriptor <therapy>)  
+   
+(<shdse_intervention-5> ^name shdse_intervention
+                  ^category <teachguidecounsel>
+                  ^target <copingskills>
+                  ^caredescriptor <idchangefactorsincreasesymptoms>)
+
+   
+   
+### INTERVENTION: 'Somatic Complaints/Fatigue'  [scf] 
+   
+(<scf_intervention-1> ^name scf_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsmentalemotional>
+                  ^caredescriptor <depression>)
+
+(<scf_intervention-2> ^name scf_intervention
+                  ^category <teachguidecounsel>
+                  ^target <copingskills>
+                  ^caredescriptor <idchangefactorsincreasesymptoms>)   
+   
+   
+   
+### INTERVENTION: 'Sedentary Life Style'  [sls] 
+
+(<sls_intervention-1> ^name sls_intervention
+                  ^category <casemanagement>
+                  ^target <exercises>
+                  ^caredescriptor <wellnessprogramcoaching>)
+
+(<sls_intervention-2> ^name sls_intervention
+                  ^category <surveillance>
+                  ^target <exercises>
+                  ^caredescriptor <typeamount>)
+   
+(<sls_intervention-3> ^name sls_intervention
+                  ^category <teachguidecounsel>
+                  ^target <exercises>
+                  ^caredescriptor <purposebenefits>)
+
+(<sls_intervention-4> ^name sls_intervention
+                  ^category <teachguidecounsel>
+                  ^target <wellness>
+                  ^caredescriptor <suggestedexercisepgm>)       
+   
+   
+   
+### INTERVENTION: 'Somatic Complaints/Fatigue'  [scf] 
+   
+(<israpc_intervention-1> ^name israpc_intervention
+                  ^category <surveillance>
+                  ^target <restsleep>
+                  ^caredescriptor <adequateappropriate>)
+
+(<israpc_intervention-2> ^name israpc_intervention
+                  ^category <teachguidecounsel>
+                  ^target <restsleep>
+                  ^caredescriptor <healthysleeppatterns>)  
+   
+     
+   
+### INTERVENTION: 'Sleep Apnea'  [sa] 
+
+(<sa_intervention-1> ^name sa_intervention
+                  ^category <surveillance>
+                  ^target <restsleep>
+                  ^caredescriptor <adequateappropriate>)
+
+(<sa_intervention-2> ^name sa_intervention
+                  ^category <teachguidecounsel>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <symptommgtsleepapnea>)
+   
+(<sa_intervention-3> ^name sa_intervention
+                  ^category <teachguidecounsel>
+                  ^target <anatomyphysiology>
+                  ^caredescriptor <incriskdiabetesobstructsleepapnea>)
+
+(<sa_intervention-4> ^name sa_intervention
+                  ^category <casemanagement>
+                  ^target <othercommunityresources>
+                  ^caredescriptor <sleepclinics>)      
+   
+   
+### INTERVENTION: 'Does Not Follow Recommended Nutrition Plan'  [dnfnp] 
+
+(<dnfnp_intervention-1> ^name dnfnp_intervention
+                  ^category <surveillance>
+                  ^target <dietarymanagement>
+                  ^caredescriptor <eatingpatternsbehaviors>)
+
+(<dnfnp_intervention-2> ^name dnfnp_intervention
+                  ^category <teachguidecounsel>
+                  ^target <dietarymanagement>
+                  ^caredescriptor <aftereatinghabits>)
+
+   
+### INTERVENTION: 'Overweight: Adult BMI 25.0 or More; Child BMI 95th Percentiles or More'  [owac] 
+
+(<owac_intervention-1> ^name owac_intervention
+                  ^category <teachguidecounsel>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <bodymassindex>)
+
+(<owac_intervention-2> ^name owac_intervention
+                  ^category <teachguidecounsel>
+                  ^target <dietarymanagement>
+                  ^caredescriptor <foodchoicesportioncontrol>)
+   
+(<owac_intervention-3> ^name owac_intervention
+                  ^category <teachguidecounsel>
+                  ^target <dietarymanagement>
+                  ^caredescriptor <readinglabelsingredients>)
+
+(<owac_intervention-4> ^name owac_intervention
+                  ^category <teachguidecounsel>
+                  ^target <dietarymanagement>
+                  ^caredescriptor <bodymassindex>) 
+   
+(<owac_intervention-5> ^name owac_intervention
+                  ^category <teachguidecounsel>
+                  ^target <wellness>
+                  ^caredescriptor <benefitsofweightloss>)    
+   
+ (<owac_intervention-6> ^name owac_intervention
+                  ^category <casemanagement>
+                  ^target <othercommunityresources>
+                  ^caredescriptor <weightmanagement>)      
+   
+   
+   
+### INTERVENTION: 'Unexplained/Progressive Weight Loss'  [upwl] 
+
+(<upwl_intervention-1> ^name upwl_intervention
+                  ^category <surveillance>
+                  ^target <dietarymanagement>
+                  ^caredescriptor <bodychanges>)
+
+(<upwl_intervention-2> ^name upwl_intervention
+                  ^category <teachguidecounsel>
+                  ^target <dietarymanagement>
+                  ^caredescriptor <expectedweightchanges>)
+   
+   
+   
+### INTERVENTION: 'Limited Social Contact'  [lsc] 
+
+(<lsc_intervention-1> ^name lsc_intervention
+                  ^category <casemanagement>
+                  ^target <othercommunityresources>
+                  ^caredescriptor <communitybasedresourcesscvs>)
+
+(<lsc_intervention-2> ^name lsc_intervention
+                  ^category <surveillance>
+                  ^target <interaction>
+                  ^caredescriptor <adequateappropriatefamilyfriends>)  
+
+(<lsc_intervention-3> ^name lsc_intervention
+                  ^category <teachguidecounsel>
+                  ^target <supportsystem>
+                  ^caredescriptor <importancesupportfamilyfriends>) 
+      
+   
+   
+### INTERVENTION: 'Low/No Income'  [lni] 
+
+  
+(<lni_intervention-1> ^name lni_intervention
+                  ^category <casemanagement>
+                  ^target <othercommunityresources>
+                  ^caredescriptor <affordablefoodoptions>)
+
+(<lni_intervention-2> ^name lni_intervention
+                  ^category <surveillance>
+                  ^target <finances>
+                  ^caredescriptor <abilitytomeetneeds>)  
+
+(<lni_intervention-3> ^name lni_intervention
+                  ^category <teachguidecounsel>
+                  ^target <finances>
+                  ^caredescriptor <affordablefoodoptions>)    
+   
+   
+   
+### INTERVENTION: 'Educational Barrier'  [edb] 
+
+  
+(<edb_intervention-1> ^name edb_intervention
+                  ^category <casemanagement>
+                  ^target <education>
+                  ^caredescriptor <educationsupportservices>)
+
+(<edb_intervention-2> ^name edb_intervention
+                  ^category <surveillance>
+                  ^target <education>
+                  ^caredescriptor <adequateappropriate>)  
+
+(<edb_intervention-3> ^name edb_intervention
+                  ^category <teachguidecounsel>
+                  ^target <othercommunityresources>
+                  ^caredescriptor <identifyavailableresources>)   
+    
+   
+   
+### INTERVENTION: 'Cultural Barrier'  [cb] 
+
+(<cb_intervention-1> ^name cb_intervention
+                  ^category <casemanagement>
+                  ^target <othercommunityresources>
+                  ^caredescriptor <resourcesforgoodsservicesinfo>)
+
+(<cb_intervention-2> ^name cb_intervention
+                  ^category <surveillance>
+                  ^target <communication>
+                  ^caredescriptor <expressionofneeds>)
+   
+(<cb_intervention-3> ^name cb_intervention
+                  ^category <teachguidecounsel>
+                  ^target <othercommunityresources>
+                  ^caredescriptor <procedurestoobtainservices>)
+
+(<cb_intervention-4> ^name cb_intervention
+                  ^category <teachguidecounsel>
+                  ^target <othercommunityresources>
+                  ^caredescriptor <purposebenefits>)    
+   
+   
+   
+### INTERVENTION: 'Ethnicity Identified Known Risk Group'  [risk_reig] 
+
+(<risk_reig_intervention-1> ^name risk_reig_intervention
+                  ^category <surveillance>
+                  ^target <genetics>
+                  ^caredescriptor <familyhistory>)
+
+(<risk_reig_intervention-2> ^name risk_reig_intervention
+                  ^category <teachguidecounsel>
+                  ^target <genetics>
+                  ^caredescriptor <familyhistory>)   
+   
+   
+   
+### INTERVENTION: 'Family History Diabetes'  [risk_gen] 
+
+(<risk_gen_intervention-1> ^name risk_gen_intervention
+                  ^category <surveillance>
+                  ^target <genetics>
+                  ^caredescriptor <familyhistory>)
+
+(<risk_gen_intervention-2> ^name risk_gen_intervention
+                  ^category <teachguidecounsel>
+                  ^target <genetics>
+                  ^caredescriptor <familyhistory>)  
+    
+   
+   
+### INTERVENTION: 'Gestational Diabetes Mellitus'  [risk_gdm] 
+
+(<risk_gdm_intervention-1> ^name risk_gdm_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <evidenceofdiseaseinfection>)
+
+(<risk_gdm_intervention-2> ^name risk_gdm_intervention
+                  ^category <teachguidecounsel>
+                  ^target <anatomyphysiology>
+                  ^caredescriptor <increriskhistoryofgestdiabetes>)  
+   
+    
+   
+   
+### INTERVENTION: 'Polycystic Ovary Syndrome'  [risk_pcos] 
+
+(<risk_pcos_intervention-1> ^name risk_pcos_intervention
+                  ^category <surveillance>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <evidenceofdiseaseinfection>)
+
+(<risk_pcos_intervention-2> ^name risk_pcos_intervention
+                  ^category <teachguidecounsel>
+                  ^target <anatomyphysiology>
+                  ^caredescriptor <increriskhistoryofdiabetespos>)
+   
+(<risk_pcos_intervention-3> ^name risk_pcos_intervention
+                  ^category <teachguidecounsel>
+                  ^target <signssymptomsphysical>
+                  ^caredescriptor <symptommgtprevention>)   
+     
+   
+      
+   
+   
+#########
+########## Problems Mapped to ^Priority [4]
+##########
+
+###
+### (Middle of the Directed Graph)
+###
+
+
+### Problems: PHYSICAL 
+#
+(<physical> ^name physical ^priority 1)
+#
+(<circulation> ^name circulation ^prioritization <physical>)
+(<urinaryfunction> ^name urinaryfunction ^prioritization <physical>)
+(<neuromusculoskeletal> ^name neuromusculoskeletal ^prioritization <physical>)
+(<skin> ^name skin ^prioritization <physical>)
+(<reproductivefunction> ^name reproductivefunction ^prioritization <physical>)
+(<pregnancy> ^name pregnancy ^prioritization <physical>)
+(<oralhealth> ^name oralhealth ^prioritization <physical>)
+
+
+### Problems: EMOTIONAL
+#
+(<emotional> ^name emotional ^priority 2)
+#
+(<mentalhealth> ^name mentalhealth ^prioritization <emotional>)
+(<physicalactivity> ^name physicalactivity ^prioritization <emotional>)
+(<sleeprestpatterns> ^name sleeprestpatterns ^prioritization <emotional>)
+(<nutrition> ^name nutrition ^prioritization <emotional>)
+
+
+### Problems: SOCIAL
+#
+(<social> ^name social ^priority 3)
+#
+(<socialcontact> ^name socialcontact ^prioritization <social>)
+(<income> ^name income ^prioritization <social>)
+(<educationalbarrior> ^name educationalbarrior ^prioritization <social>)
+(<culturalbarrier> ^name culturalbarrier ^prioritization <social>)
+
+
+### Problems: RISK
+# NOTE: Both 'Race' and 'Genetics' map to "healthcaresupervision" as a Omaha Problem.
+#
+(<risk> ^name risk ^priority 4)
+#
+(<healthcaresupervision> ^name healthcaresupervision ^prioritization <risk>)
+(<pregnancygdm> ^name pregnancygdm ^prioritization <risk>)
+(<reproductivefn> ^name reproductivefn ^prioritization <risk>)
+
+
+
+##########
+########## Problems + Signs & Symptoms (Organized by Priority)
+##########
+
+
+#####
+##### PRIORITY #1: PHYSICAL (Top of the Directed Graph)
+#####
+
+
+## PROBLEM: CIRCULATION
+
+# S&S: Abnormal Blood Pressure Reading
+(<root> ^omahasignsymptom <abpr>)
+(<abpr> ^code |ABPR| ^name |Abnormal Blood Pressure Reading| ^omahaproblem <circulation> ^intervention <abpr_intervention-1>
+                                                                                       ^intervention <abpr_intervention-2>
+                                                                                       ^intervention <abpr_intervention-3>
+                                                                                       ^intervention <abpr_intervention-4>
+                                                                                       ^intervention <abpr_intervention-5>)
+# S&S: Discoloration of Skin/Cyanosis
+(<root> ^omahasignsymptom  <dsc>)
+(<dsc> ^code |DSC| ^name |Discoloration of Skin/Cyanosis| ^omahaproblem <circulation>  ^intervention <dsc_intervention-1>
+                                                                                     ^intervention <dsc_intervention-2>
+                                                                                     ^intervention <dsc_intervention-3>)
+# S&S: Temperature Change in Affected Area
+(<root> ^omahasignsymptom <tcaa>)
+(<tcaa> ^code |TCAA| ^name |Temperature Change in Affected Area| ^omahaproblem <circulation> ^intervention <tcaa_intervention-1>
+                                                                                           ^intervention <tcaa_intervention-2>
+                                                                                           ^intervention <tcaa_intervention-3>)
+## PROBLEM: PREGNANCY
+
+# S&S: Prenatal Complications/Preterm Labor
+(<root> ^omahasignsymptom <pncpl>)
+(<pncpl> ^code |PNCPL| ^name |Prenatal Complications/Preterm Labor| ^omahaproblem <pregnancy> ^intervention <pncpl_intervention-1>
+                                                                                            ^intervention <pncpl_intervention-2>)
+
+## PROBLEM: URINARY FUNCTION
+
+# S&S: Urgency/Frequency
+(<root> ^omahasignsymptom  <ufu>)
+(<ufu> ^code |UFU| ^name |Urgency/Frequency (Urination)| ^omahaproblem <urinaryfunction> ^intervention <ufu_intervention-1>
+                                                                                       ^intervention <ufu_intervention-2>
+                                                                                       ^intervention <ufu_intervention-3>
+                                                                                       ^intervention <ufu_intervention-4>)
+
+   ## PROBLEM: NEURO-MUSCULO-SKELETAL FUNCTION
+
+# S&S: Decreased Sensation
+(<root> ^omahasignsymptom <ds>)
+(<ds> ^code |DS| ^name |Decreased Sensation| ^omahaproblem <neuromusculoskeletal> ^intervention <ds_intervention-1>
+                                                                                ^intervention <ds_intervention-2>)
+
+## PROBLEM: SKIN
+
+# S&S: Excessively Dry
+(<root> ^omahasignsymptom <eds>)
+(<eds> ^code |EDS| ^name |Excessively Dry| ^omahaproblem <skin> ^intervention <eds_intervention-1>
+                                                              ^intervention <eds_intervention-2>
+                                                              ^intervention <eds_intervention-3>
+                                                              ^intervention <eds_intervention-4>)
+
+# Lesion/Pressure Ulcer
+(<root> ^omahasignsymptom <lpu>)
+(<lpu> ^code |LPU| ^name |Lesion/Pressure Ulcer| ^omahaproblem <skin> ^intervention <lpu_intervention-1>
+                                                                    ^intervention <lpu_intervention-2>
+                                                                    ^intervention <lpu_intervention-3>
+                                                                    ^intervention <lpu_intervention-4>
+                                                                    ^intervention <lpu_intervention-5>)
+
+   
+## PROBLEM: REPRODUCTIVE FUNCTION
+
+# S&S: Impotency
+(<root> ^omahasignsymptom <imp>)
+(<imp> ^code |IMP| ^name |Impotency| ^omahaproblem <reproductivefunction> ^intervention <imp_intervention-1>
+                                                                        ^intervention <imp_intervention-2>)
+
+
+## PROBLEM: ORAL HEALTH
+
+# S&S: Cracked Lips/Dry Mouth    
+# NOTE: This S&S has also been listed as a member of the Omaha Taxonomy Problems as 'Digestion-Hydration'.
+# Upon further inspection, we've been instructed to use 'Oral Health' as the omaha problem.
+(<root> ^omahasignsymptom <cldm>)
+(<cldm> ^code |CLDM| ^name |Cracked Lips/Dry Mouth| ^omahaproblem <oralhealth>  ^intervention <cldm_intervention-1>
+                                                                              ^intervention <cldm_intervention-2>
+                                                                              ^intervention <cldm_intervention-3>)
+
+   
+#####
+##### PRIORITY #2: EMOTIONAL  (Top of the Directed Graph)
+#####
+
+
+## PROBLEM: MENTAL HEALTH
+
+# S&S: Apprehension/Undefined Fear
+(<root> ^omahasignsymptom <auf>)
+(<auf> ^code |AUF| ^name |Apprehension/Undefined Fear| ^omahaproblem <mentalhealth> ^intervention <auf_intervention-1>
+                                                                                  ^intervention <auf_intervention-2>
+                                                                                  ^intervention <auf_intervention-3>
+                                                                                  ^intervention <auf_intervention-4>
+                                                                                  ^intervention <auf_intervention-5>)
+
+# S&S: Sadness/Hopelessness/Decreases Self-Esteem
+(<root> ^omahasignsymptom <shdse>)
+(<shdse> ^code |SHDSE| ^name |Sadness/Hopelessness/Decreases Self-Esteem| ^omahaproblem <mentalhealth> ^intervention <shdse_intervention-1>
+                                                                                                     ^intervention <shdse_intervention-2>
+                                                                                                     ^intervention <shdse_intervention-3>
+                                                                                                     ^intervention <shdse_intervention-4>
+                                                                                                     ^intervention <shdse_intervention-5>)
+
+
+# S&S: Somatic Complaints/Fatigue
+(<root> ^omahasignsymptom <scf>)
+(<scf> ^code |SCF| ^name |Somatic Complaints/Fatigue| ^omahaproblem <mentalhealth> ^intervention <scf_intervention-1>
+                                                                                 ^intervention <scf_intervention-2>)
+
+
+## PROBLEM: Physical Activity
+
+# S&S: Sedentary Life Style
+(<root> ^omahasignsymptom <sls>)
+(<sls> ^code |SLS| ^name |Sedentary Life Style| ^omahaproblem <physicalactivity> ^intervention <sls_intervention-1>
+                                                                               ^intervention <sls_intervention-2>
+                                                                               ^intervention <sls_intervention-3>
+                                                                               ^intervention <sls_intervention-4>)
+
+
+## PROBLEM: SLEEP AND REST PATTERNS
+
+# S&S: Insufficient Sleep/Rest for Age/Physical Condition
+(<root> ^omahasignsymptom <israpc>)
+(<israpc> ^code |ISRAPC| ^name |Insufficient Sleep/Rest for Age/Physical Condition| ^omahaproblem <sleeprestpatterns> 
+                                                                                           ^intervention <israpc_intervention-1>
+                                                                                           ^intervention <israpc_intervention-2>)
+
+# S&S: Sleep Apnea
+(<root> ^omahasignsymptom <sa>)
+(<sa> ^code |SA| ^name |Sleep Apnea| ^omahaproblem <sleeprestpatterns> ^intervention <sa_intervention-1>
+                                                                     ^intervention <sa_intervention-2>
+                                                                     ^intervention <sa_intervention-3>
+                                                                     ^intervention <sa_intervention-4>)
+
+
+## PROBLEM: NUTRITION
+
+# S&S: Does Not Follow Recommended Nutrition Plan
+(<root> ^omahasignsymptom <dnfnp>)
+(<dnfnp> ^code |DNFNP| ^name |Does Not Follow Recommended Nutrition Plan| ^omahaproblem <nutrition> ^intervention <dnfnp_intervention-1>
+                                                                                                  ^intervention <dnfnp_intervention-2>)
+
+
+# S&S: Overweight: Adult BMI 25.0 or More; Child BMI 95th Percentiles or More
+(<root> ^omahasignsymptom <owac>)
+(<owac> ^code |OWAC| ^name |Overweight: Adult BMI 25.0 or More; Child BMI 95th Percentiles or More| ^omahaproblem <nutrition>
+                                                                                                       ^intervention <owac_intervention-1>
+                                                                                                       ^intervention <owac_intervention-2>
+                                                                                                       ^intervention <owac_intervention-3>
+                                                                                                       ^intervention <owac_intervention-4>
+                                                                                                       ^intervention <owac_intervention-5>
+                                                                                                       ^intervention <owac_intervention-6>)
+
+
+# S&S: Unexplained/Progressive Weight Loss
+(<root> ^omahasignsymptom <upwl>)
+(<upwl> ^code |UPWL| ^name |Unexplained/Progressive Weight Loss| ^omahaproblem <nutrition> 
+                                                                    ^intervention <upwl_intervention-1>
+                                                                    ^intervention <upwl_intervention-2>)
+
+
+
+#####
+##### PRIORITY #3: SOCIAL (Top of the Directed Graph)
+#####
+
+## PROBLEM: SOCIAL CONTACT
+
+# S&S: Limited Social Contact
+(<root> ^omahasignsymptom <lsc>)
+(<lsc> ^code |LSC| ^name |Limited Social Contact| ^omahaproblem <socialcontact> ^intervention <lsc_intervention-1>
+                                                                              ^intervention <lsc_intervention-2>
+                                                                              ^intervention <lsc_intervention-3>)
+
+
+## PROBLEM: INCOME
+
+# S&S: Low/No Income
+(<root> ^omahasignsymptom <lni>)
+(<lni> ^code |LNI| ^name |Low/No Income| ^omahaproblem <income> ^intervention <lni_intervention-1>
+                                                              ^intervention <lni_intervention-2>
+                                                              ^intervention <lni_intervention-3>)
+
+
+## PROBLEM: COMMUNICATION WITH COMMUNITY RESOURCES
+
+# S&S: Educational Barrier
+(<root> ^omahasignsymptom <edb>)
+(<edb> ^code |EDB| ^name |Educational Barrier| ^omahaproblem <educationalbarrior> 
+                                                              ^intervention <edb_intervention-1>
+                                                              ^intervention <edb_intervention-2>
+                                                              ^intervention <edb_intervention-3>)
+
+# S&S: Cultural Barrier
+(<root> ^omahasignsymptom <cb>)
+(<cb> ^code |CB| ^name |Cultural Barrier| ^omahaproblem <culturalbarrier> ^intervention <cb_intervention-1>
+                                                                        ^intervention <cb_intervention-2>
+                                                                        ^intervention <cb_intervention-3>
+                                                                        ^intervention <cb_intervention-4>)
+
+
+
+#####
+##### PRIORITY #4: RISK (Top of the Directed Graph)
+#####
+
+
+## PROBLEM: HEALTH CARE SUPERVISION
+
+# RISK: Race: Ethnicity Identified Known Risk Group
+(<root> ^omahasignsymptom <reig>)
+(<reig> ^code |REIG| ^name |Ethnicity Identified Known Risk Group| ^omahaproblem <healthcaresupervision> 
+                                                                                    ^intervention <risk_reig_intervention-1>
+                                                                                    ^intervention <risk_reig_intervention-2>)
+
+
+# RISK: GENETICS: Family History Diabetes
+(<root> ^omahasignsymptom <gen>)
+(<gen> ^code |GEN| ^name |Family History Diabetes| ^omahaproblem <healthcaresupervision>  ^intervention <risk_gen_intervention-1>
+                                                                                             ^intervention <risk_gen_intervention-2>)
+
+
+# RISK: GDM: Pregnancy - Gestational Diabetes Mellitus
+(<root> ^omahasignsymptom <gdm>)
+(<gdm> ^code |GDM| ^name |Gestational Diabetes Mellitus| ^omahaproblem <pregnancygdm> ^intervention <risk_gdm_intervention-1>
+                                                                                         ^intervention <risk_gdm_intervention-2>)
+
+
+# RISK: GDM: Polycystic Ovary Syndrome
+(<root> ^omahasignsymptom <pcos>)
+(<pcos> ^code |PCOS| ^name |Polycystic Ovary Syndrome| ^omahaproblem <reproductivefn>  ^intervention <risk_pcos_intervention-1>
+                                                                                          ^intervention <risk_pcos_intervention-2>
+                                                                                          ^intervention <risk_pcos_intervention-3>)
+
+
+
+# END Omaha POC SMem Population
+}
+
+
+
+
+
+###
+### OPERATOR: INITIALIZE STATE & QUERY ROOT
+###
+
+# Propose initializing the state with an example patient use-case and also query the SMem for the Root Node.
+#
+# Use an 'query' command to get the first item called 'root' in the Semantic Memory directed graph 
+# Print out via debugger using the 'visualize smem' and 'visualize wm' commands.
+# The "Apply" rule creates "^smem.command.query.name" in WM.
+#
+# This is a conversation w/the SOAR SMEM module of the type: "Can you search for and smem object with the name
+# "root", and respond during the 'next' decision cycle by putting the root object on the SOAR 'results structure'?"
+#
+# Note: Tribal Knowledge - the Graph Structure is 4 levels deep so the flag "^depth 4" is used to get the entire
+#       structure out of SMem and put it into WM for computation.  
+
+sp {propose*initialize-state-query-root
+    "Propose initializing the state with an example patient use-case."
+    (state <s> ^superstate nil
+            -^name)
+-->
+    (<s> ^operator <o> + >)
+    (<o> ^name initialize-state)
+}
+
+
+sp {apply*initialize-state
+    "This is the Example Patient Use-Case to test the Agents behavior with."
+    (state <s> ^operator.name initialize-state ^smem.command <scmd>)
+-->
+    (<s> ^name omaha_taxonomy_smem)
+    
+    (<s> ^patient_case <patientcase>)
+    (<patientcase> ^patient_number <patient_number> ^patient_age <patient_age> 
+                                                    ^patient_gender <patient_gender> 
+                                                    ^patient_signssymptoms <patient_signssymptoms>)
+    (<patient_number> ^name patient_number ^value |12345|)
+    (<patient_age> ^name patient_age ^value 54)
+    (<patient_gender> ^name patient_gender ^value |Male|)
+    (<patient_signssymptoms> ^name patient_signssymptoms ^pss <pss-1> 
+                                                         ^pss <pss-2>
+                                                         ^pss <pss-3>
+                                                         ^pss <pss-4>
+                                                         ^pss <pss-5>)
+    (<pss-1> ^code |ABPR| ^K 5 ^B 3 ^S 2  )
+    (<pss-2> ^code |LSC| )
+    (<pss-3> ^code |AUF| )
+    (<pss-4> ^code |UFU| )
+    (<pss-5> ^code |REIG| ^K 3 ^B 3 ^S 3)
+    
+    (write (crlf)(crlf)  |Initialized WMEs with a patient Use-Case!| (crlf) (crlf) )
+    
+    (<scmd> ^query <q> ^depth 4)
+    (<q> ^name root)
+    (write (crlf)(crlf)  |Querying SMem for the Root Node!| (crlf) (crlf) )
+}
+
+
+###
+### ELABORATOR: Link-Patient S&S to Omaha S&S
+###
+
+# This Elaboration Rule simply takes the Patient S&S from the examined case and LINK's 
+# that to the Omaha S&S DG that was retrieved from Semantic Memory. That link provides 
+# a DG edge to that entirety of Omaha information  
+#
+#
+
+sp {elaborate*patient_case*signsymptom*omahasignsymptom
+    "For each patient_signsymptom, link to the corresponding omahasignsymptom 
+    if it has been loaded into WM."
+
+    (state <s> ^patient_case.patient_signssymptoms.pss <pss>)
+    (state <s> ^current-item.omahasignsymptom <oss>)
+    (<pss> ^code <code>)
+    (<oss> ^code <code>)
+    
+-->
+    (<pss> ^omahasignsymptom <oss>)
+    # (write (crlf)(crlf)  |Executing Patient S&S Data Link with Omaha S&S Data Root Node!| (crlf) (crlf) )
+    # (write (crlf) |P_CODEs: | <code>)
+    # (write (crlf) |O_CODEs: | <code>)    
+}
+
+
+
+
+###
+### OPERATOR: COLLECT-ROOT
+###
+
+# Fetch item from the SOAR 'results' structure, place the query result onto the 
+# "topstate (S1)" and then remove the query command to clean up.
+#
+# When the Architecture finds something for the query, it communicates success via "^smem.result.success".
+#
+# "^current-item" - use this to access the 'root' object of the SMem directed graph of interest that has been 
+# placed into WM.
+#
+# Added: (<s> ^name omaha_taxonomy_smem -) to help clean up WM.
+#
+###
+
+sp {propose*collect-root
+    "If there is a successful result returned, and no current-item yet, it must be the initial query result,
+     so put the operator connect-root into WM."
+
+    (state <s> ^name omaha_taxonomy_smem
+            ^smem.result.success <cue>
+            -^current-item)
+-->
+    (<s> ^operator <o> +)
+    (<o> ^name collect-root)
+}
+
+
+sp {apply*collect-root
+    "Collect the query result and remove the query command to free up the SMem link.
+     ^current-item now holds a reference to the root object."
+     
+    (state <s> ^operator.name collect-root
+        ^smem <smem>)
+    (<smem> ^command <scmd>
+            ^result.retrieved <lti>)
+    (<scmd> ^query <q>)
+    (<lti> ^name <name>)
+-->
+    (<s> ^current-item <lti>)
+    (<scmd> ^query <q> -)
+    (<s> ^name omaha_taxonomy_smem - )
+    (write (crlf)(crlf) |Collected Root Node: | <name> (crlf)(crlf))
+}
+
+
+
+
+###
+### Desired State: Omaha Sign/Symptom 
+###
+
+# This version does not produce the elaboration linkages that the last version did
+# therefore we get a 'state-no-change' as a result.
+
+
+sp {detect*goal-achieved
+    ""
+    (state <s> ^patient_case.patient_signssymptoms.pss <pss>
+               ^current-item.omahasignsymptom <oss>)
+    (<pss> ^code <code>)
+    (<oss> ^code <code>)
+-->
+    (write (crlf)(crlf)  |Fetching Patient Use-Case S&S Codes: | (crlf) (crlf) )
+    (write (crlf) |P_CODEs: | <code>)
+    (write (crlf) |O_CODEs: | <code>)
+   
+   (halt)
+   }
+
+
+
+
+
+
+
+   
+    
+    
+    
+
+
+
