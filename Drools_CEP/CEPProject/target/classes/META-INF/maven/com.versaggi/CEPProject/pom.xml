@@ -1,0 +1,180 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.versaggi</groupId>
+  <artifactId>CEPProject</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>Drools Complex Event Processing </name>
+  <description>My Drools Complex Event Processing Example</description>
+
+
+ <build>  <!-- BEGIN BUILD -->
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.1</version>
+          <configuration>
+            <!-- put your configurations here -->
+          </configuration>
+        </plugin>
+     <plugin > <!-- KIE PLUGIN : ALWAYS use this !! -->
+        <groupId>org.kie</groupId>
+        <artifactId>kie-maven-plugin</artifactId >
+        <version>6.1.0.Final</version >
+        <extensions>true</extensions>
+      </plugin > 
+      <plugin >  <!-- MOJO PLUGIN -->
+        <groupId>org.codehaus.mojo</groupId >
+        <artifactId> exec-maven-plugin</artifactId >
+        <version> 1.2.1</version>
+      </plugin >        
+      </plugins>
+    </pluginManagement>
+  </build>  <!-- END BUILD -->
+  
+  
+<dependencies>   <!-- BEGIN DEPENDENCIES -->
+    <dependency>
+       <groupId >org.sonatype.tycho</groupId>
+       <artifactId >org.eclipse.jdt.core </artifactId>
+       <version >3.6.2.v_A76_R36x</version>
+    </dependency >
+    <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId> kie-api</artifactId>
+    </dependency >
+    <dependency>
+        <groupId>org.drools</groupId >
+        <artifactId> drools-core</artifactId >
+    </dependency >
+    <dependency>
+        <groupId> org.drools</groupId >
+        <artifactId>drools-compiler</artifactId >
+        <exclusions>
+            <exclusion>
+                <artifactId>ecj</artifactId>
+                <groupId>org.eclipse.jdt.core.compiler</groupId >
+            </exclusion>
+        </exclusions>
+    </dependency>
+    <dependency>
+        <groupId>org.drools</groupId >
+        <artifactId>drools-decisiontables</artifactId >
+    </dependency >
+    <dependency>
+        <groupId>org.drools</groupId >
+        <artifactId>drools-persistence-jpa</artifactId >
+    </dependency>
+    <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems</artifactId >
+    </dependency>
+    <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-bpmn2</artifactId >
+    </dependency>
+    <dependency>
+        <groupId>org.drools</groupId >
+        <artifactId>drools-templates</artifactId >
+    </dependency>
+    <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-spring</artifactId >
+        <exclusions>
+            <exclusion>
+                <artifactId>el-api</artifactId>
+                <groupId>javax.el</groupId>
+            </exclusion>
+        </exclusions>
+    </dependency >  
+  </dependencies >  <!-- END DEPENDENCIES -->
+
+<dependencyManagement >  <!-- BEGIN DEPENDENCIES MANAGEMENT-->
+    <dependencies >
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId> kie-api</artifactId>
+            <version>6.1.0.Final</version >
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId >
+            <artifactId>drools-core</artifactId >
+            <version>6.1.0.Final</version >
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId >
+            <artifactId>drools-compiler</artifactId >
+            <version>6.1.0.Final</version >
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId >
+            <artifactId>drools-decisiontables</artifactId >
+            <version>6.1.0.Final</version >
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId >
+            <artifactId>drools-persistence-jpa</artifactId >
+            <version>6.1.0.Final</version >
+        </dependency>
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-workitems</artifactId >
+            <version>6.1.0.Final</version >
+        </dependency>
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-bpmn2</artifactId >
+            <version>6.1.0.Final</version >
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId >
+            <artifactId>drools-templates</artifactId >
+            <version>6.1.0.Final</version >
+        </dependency>
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-spring</artifactId >
+            <version>6.1.0.Final</version >
+        </dependency>
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-camel</artifactId >
+            <version>6.1.0.Final</version >
+        </dependency>
+        
+        <dependency>
+            <groupId>org.slf4j</groupId >
+            <artifactId>slf4j-api</artifactId >
+            <version>1.7.2</version>
+        </dependency>
+        
+       <dependency>
+    		<groupId>org.slf4j</groupId>
+    		<artifactId>slf4j-log4j12</artifactId>
+    		<version> 1.7.2</version>
+	   </dependency>    
+        
+		 <dependency> 
+		  <groupId>org.slf4j</groupId>
+		  <artifactId>slf4j-jdk14</artifactId>
+		  <version>1.7.7</version>
+		</dependency>       
+        
+        <dependency>
+            <groupId>ch.qos.logback</groupId >
+            <artifactId>logback-classic</artifactId >
+            <version> 1.0.13</version>
+        </dependency>
+        
+		 <dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>1.0.13</version>
+		</dependency>
+
+        </dependencies>
+  </dependencyManagement >    <!-- END DEPENDENCIES MANAGEMENT-->
+
+  
+</project>  <!-- END PROJECT-->

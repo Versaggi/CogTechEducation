@@ -1,0 +1,53 @@
+//created on: Nov 28, 2014
+package com.sample.cep
+
+import com.sample.cep.Sale;
+
+
+// Declarations
+
+declare Sale
+	@role(event)
+	//article : String
+	//amount : long
+	//quantity : int
+end
+
+
+
+rule "StoreOne - Has Passed it's Sales Record"
+	when
+		$n: Number( $totalSalesAmount : intValue, intValue > 1000 )
+		from accumulate ( Sale($amount : amount, $quantity : quantity) from entry-point "StoreOne", sum( $amount * $quantity ))
+	then
+		System.out.println("StoreOne - Has passed its Sales Record with sales of: " + $n );
+end
+
+
+
+
+rule "StoreTwo - has Passed its Sales Record"
+	when
+		$n: Number( $totalSalesAmount : intValue, intValue > 1000 )
+		from accumulate ( Sale($amount : amount, $quantity : quantity) from entry-point "StoreTwo", sum( $amount * $quantity ))
+	then
+		System.out.println("StoreTwo - Has passed its Sales Record with sales of: " + $n );	
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,208 @@
+//created on: Dec 2, 2014
+package com.military.idcard
+
+import com.military.idcard.AccessAttempt;
+import com.military.idcard.DataAccessAttempt;
+
+// Globals: Constants : from EventStream.java
+/*	private static final String LOGIN = "login";
+	private static final String LOGOUT = "logout";
+	private static final String SUCCESSFUL = "successful";
+	private static final String FAILURE = "failure";
+	private static final String TOPSECRET = "topsecret";
+	private static final String SECRET = "secret";
+	private static final String CLASSIFIED = "classified";
+	private static final String UNCLASSIFIED = "unclassified";
+	private static final String OFFICE = "office";
+	private static final String CAFE = "cafe";
+	private static final String BARRACKS = "barracks";
+	private static final String UNKNOWN = "unknown"; */
+
+// Declarations
+
+declare AccessAttempt
+	@role(event)
+end
+
+declare DataAccessAttempt
+	@role(event)
+end
+
+/*
+	LOGIN / LOGOUT / DATA ACCESS Event RULES
+*/
+
+rule "LogIN Event"
+	when 
+		String( this == "DEBUG" )
+		$login  : AccessAttempt( action == "login" ) from entry-point "idsystem"
+	then
+		System.out.println("A User logged in: " + $login );
+end
+	
+	
+rule "LogOUT Event"
+	when 
+		String( this == "DEBUG" )
+		$logout : AccessAttempt( action == "logout" ) from entry-point "idsystem"
+	then
+		System.out.println("A User logged out: " + $logout );
+end	
+	
+	
+
+rule "Data Access"
+	when
+		String( this == "DEBUG" )
+		$login  : AccessAttempt( $l : location, action == "login", $eid : employeeId, $cid : computerId ) from entry-point "idsystem"
+		$dataAccess : DataAccessAttempt( $dc : dataClassification, dataClassification != "topsecret", employeeId == $eid, computerId == $cid ) from entry-point "idsystem"
+	then
+		System.out.println("Notification: Data Access -> [" + $dataAccess + " ]");
+end	
+
+
+
+
+/*
+	CLASSIFIED/SECRET/TOPSECRET Data Access: Notifications
+*/	
+	
+rule "Top Secret Data Access"
+	when
+		String( this == "DEBUG" )
+		$login  : AccessAttempt( location != "unknown", action == "login", $eid : employeeId, $cid : computerId, result == "successful" ) from entry-point "idsystem"
+		$dataAccess : DataAccessAttempt( dataClassification == "topsecret", employeeId == $eid, computerId == $cid ) from entry-point "idsystem"
+	then
+		System.out.println("Notification: TopSecret Data Access -> [" + $dataAccess + " ]");
+end	
+	
+rule "Secret Data Access"
+	when
+		String( this == "DEBUG" )
+		$login  : AccessAttempt( location != "unknown", action == "login", $eid : employeeId, $cid : computerId, result == "successful" ) from entry-point "idsystem"
+		$dataAccess : DataAccessAttempt( dataClassification == "secret", employeeId == $eid, computerId == $cid ) from entry-point "idsystem"
+	then
+		System.out.println("Notification: Secret Data Access -> [" + $dataAccess + " ]");
+end		
+	
+	
+rule "Classified Data Access"
+	when
+		String( this == "DEBUG" )
+		$login  : AccessAttempt( location != "unknown", action == "login", $eid : employeeId, $cid : computerId, result == "successful" ) from entry-point "idsystem"
+		$dataAccess : DataAccessAttempt( dataClassification == "classified", employeeId == $eid, computerId == $cid ) from entry-point "idsystem"
+	then
+		System.out.println("Notification: Classified Data Access -> [" + $dataAccess + " ]");
+end		
+	
+	
+
+rule "ALERT: Access of RESTRICTED Data from PUBLIC Location: "
+	when
+		$loginNotOffice  : AccessAttempt( location != "office", action == "login", $eid : employeeId, $cid : computerId, result == "successful") from entry-point "idsystem"
+		$dataAccess : DataAccessAttempt( this after $loginNotOffice, dataClassification != "unclassified", employeeId == $eid, computerId == $cid  ) from entry-point "idsystem"
+	then
+		System.out.println("ALERT: Restricted Data Breach -> [ " + $dataAccess + " ]");
+end
+	
+	
+	
+/*
+	Unknown Location / Access Rules
+*/
+
+rule "Access - UNKNOWN location"
+	when 
+		// String( this == "DEBUG" )
+		$login  : AccessAttempt( location == "unknown", action == "login", result == "successful" ) from entry-point "idsystem"
+	then
+		System.out.println("ALERT: Unknown Location Login -> [ Unknown Location ] : " + $login );
+end	
+	
+
+rule "ALERT: Access of TopSecret Data from unkown Location"
+	when
+		$loginUnknown  : AccessAttempt( location == "unknown", action == "login", $eid : employeeId, $cid : computerId, result == "successful") from entry-point "idsystem"
+		$dataAccess : DataAccessAttempt( this after $loginUnknown, dataClassification == "topsecret", employeeId == $eid, computerId == $cid  ) from entry-point "idsystem"
+	then
+		System.out.println("ALERT: TopSecret Data Breach -> [ " + $dataAccess + " ]");
+end		
+
+
+/*
+	Multiple Event Rules (4)
+*/
+
+rule "Multiple Logins: Barracks & ?"
+	when
+		$loginBarracks : AccessAttempt( $e : employeeId, $a : action, $a == "login", location == "barracks") from entry-point "idsystem"
+		$aa : AccessAttempt( this after $loginBarracks, employeeId == $e, action == "login", location != "barracks", location != "unknown", result == "successful") from entry-point "idsystem"
+		not ( $logoutBarracks : AccessAttempt( this before $aa, employeeId == $e,  $ao : action, $ao == "logout", location == "barracks") from entry-point "idsystem")
+	then
+		System.out.println("ALERT: Multiple Logins: (Successful) -> [ 1st: Barracks and 2nd: " + $aa.getLocation() + " ] - ID: " + $aa.getEmployeeId() );
+end	
+
+
+rule "Multiple Logins: Cafe & ?"
+	when
+		$loginCafe : AccessAttempt( $e : employeeId, $a : action, $a == "login", location == "cafe") from entry-point "idsystem"
+		$aa : AccessAttempt( this after $loginCafe, employeeId == $e, action == "login", location != "cafe", location != "unknown", result == "successful") from entry-point "idsystem"
+		not ( $logoutCafe : AccessAttempt( this before $aa, employeeId == $e,  $ao : action, $ao == "logout", location == "cafe") from entry-point "idsystem")
+	then
+		System.out.println("ALERT: Multiple Logins: (Successful) -> [ 1st: Cafe and 2nd: " + $aa.getLocation() + " ] - ID: " + $aa.getEmployeeId() );
+end		
+
+
+rule "Multiple Logins: Office & ?"
+	when
+		$loginOffice : AccessAttempt( $e : employeeId, $a : action, $a == "login", location == "office") from entry-point "idsystem"
+		$aa : AccessAttempt( this after $loginOffice, employeeId == $e, action == "login", location != "office", location != "unknown", result == "successful") from entry-point "idsystem"
+		not ( $logoutOffice : AccessAttempt( this before $aa, employeeId == $e,  $ao : action, $ao == "logout", location == "office") from entry-point "idsystem")
+	then
+		System.out.println("ALERT: Multiple Logins: (Successful) -> [ 1st: Office and 2nd: " + $aa.getLocation() + " ] - ID: " + $aa.getEmployeeId() );
+end	
+	
+
+
+rule "Repeat Logion failures within 6 minutes: CAFE"
+	when
+		//$acat : AccessAttempt( $e : employeeId, $a : action, $a == "login", $l : location, result == "failure" ) from entry-point "idsystem"	
+		// Number( $count : intValue >= 5 ) from accumulate ($acc : AccessAttempt( employeeId == $e, action == "login", location == $l,  result == "failure" ) from entry-point"idsystem", count($acc) )
+	    // accumulate (AccessAttempt( $e : employeeId, $a : action, $a == "login", $l : location, $r: result, result == "failure" ) over window:time( 6m ) from entry-point "idsystem",  $count : count($r) )
+	    // Number( $count : intValue >= 5 ) from accumulate ($acc : AccessAttempt( $e : employeeId, $a : action, $a == "login" , $l : location,  $r: result, result == "failure" ) over window:time( 24h ) from entry-point"idsystem", count($acc) )               
+	    Number( $count : intValue >= 5 ) from accumulate ($acc : AccessAttempt( $e : employeeId, $a : action, $a == "login" , location == "cafe",  $r: result, result == "failure" ) from entry-point"idsystem", count($acc) )
+	then
+		System.out.println( "ALERT: Multiple Logins:  (Failures) -> CAFE " + $count );
+end
+
+
+
+rule "Repeat Logion failures within 6 minutes: BARRACKS"
+	when
+		Number( $count : intValue >= 5 ) from accumulate ($acc : AccessAttempt( $e : employeeId, $a : action, $a == "login" , location == "barracks",  $r: result, result == "failure" ) from entry-point"idsystem", count($acc) )
+	then
+		System.out.println( "ALERT: Multiple Logins:  (Failures) -> BARRACKS " + $count );
+end
+
+
+rule "Repeat Logion failures within 6 minutes: OFFICE"
+	when
+		Number( $count : intValue >= 5 ) from accumulate ($acc : AccessAttempt( $e : employeeId, $a : action, $a == "login" , location == "office",  $r: result, result == "failure" ) from entry-point"idsystem", count($acc) )
+	then
+		System.out.println( "ALERT: Multiple Logins: (Failures) -> OFFICE " + $count );
+end
+
+
+rule "Repeat Logion failures within 6 minutes: UNKNOWN"
+	when
+		Number( $count : intValue >= 5 ) from accumulate ($acc : AccessAttempt( $e : employeeId, $a : action, $a == "login" , location == "unknown",  $r: result, result == "failure" ) from entry-point"idsystem", count($acc) )
+	then
+		System.out.println( "ALERT: Breach Attempts - Multiple Failures: (UNKNOWN) " + $count );
+end
+
+
+
+
+
+
+

@@ -1,0 +1,561 @@
+package com.sample
+ 
+import com.sample.DroolsTest.Message;
+import com.sample.DroolsTest.Contact;
+import com.sample.AlarmsResultSet;
+// import function com.sample.DroolsTest.myGreetings; <= Does not work properly
+// The import com.sample.DroolsTest.myGreetings cannot be resolved
+import com.sample.Hello;
+import java.util.List;
+import java.util.Date; 
+import java.util.ArrayList; 
+ 
+ 
+// Import ArrayLists as GLOBALs from the Java Calling Class 
+global java.util.List myStringList; 
+global java.util.List myAlarmsList;
+ 
+ 
+// Use of META DATA and @Key Annotations
+// @KEY annotations will generate setters/getters for the attribute.
+// AGE @key is used for the Truth Maintenance System with Inference
+declare Person
+    @author( Versaggi )
+    @dateOfCreation( 13-Nov-2014 )
+
+    name : String @key @manLength( 30 )
+    email : String
+    dateOfBirth : Date
+    age : int @key
+    favouriteCheese : String
+end 
+ 
+
+// Use of INHERITANCE in Declaration
+// This is equivalent to creating a stantard POJO. 
+declare Student extends Person
+    school : String
+end
+
+// More INHERITANCE
+declare LongTermStudent extends Student
+    years : int
+    course : String
+end
+ 
+ 
+// Localised FUNCTION
+// Should be able to import these but it failed. 
+function String greetings(String name) {
+    return "Hello "+name+"!";
+} 
+
+ 
+ 
+// Infrastructure for BACKWARD CHAINING: AKA: Reactive Transitive Closures
+declare Location
+    thing : String 
+    location : String 
+end 
+
+ 
+/*
+QUERY:
+The '?' symbol means the query is pull only, once the results are returned you will not receive further results as the underlying data changes.
+*/
+
+query isContainedIn( String x, String y ) 
+      Location(x, y;)
+    or 
+      ( Location(z, y;) and ?isContainedIn(x, z;) )
+end
+
+
+// INSERT OBJECTs and Text TRIGGERS
+// Insert Objects (POJO's) into Working Memory.
+rule "Insert stuff in locations" 
+ 	when
+ 		eval (true)
+ 	then
+ 		insert ( new Location("box", "drawer") );
+ 		insert ( new Location("pen", "drawer") );
+        insert ( new Location("drawer" , "desk" ) );
+        insert ( new Location("desk" , "study" ) );
+        insert ( new Location("study" , "academic wing" ) );
+        insert ( new Location("academic wing" , "research institute" ) );
+        insert ("GO");
+        insert ("GO2");
+end
+ 
+ 
+// Execute if TRIGGER found 
+rule "GO" 
+ 	when
+		String( this == "GO") 	
+		isContainedIn("pen", "research institute"; )
+ 	then
+ 		System.out.println("The Pen is in the Research Institute.");
+end
+
+
+/*
+The variables 'thing' and 'location'in the  query "isContainedIn" unify with all 
+of the facts encountered in working memory and are displayed.
+*/
+
+rule "Unification"
+	when
+	    String( this == "GO2" )
+	    isContainedIn(thing, location; )
+	then
+	    System.out.println( "thing " + thing + " is in " + location );
+	    
+end 
+ 
+ 
+ /*
+ UPDATE: 
+ update(object, handle); will tell the engine that an object has changed 
+ (one that has been bound to something on the LHS) and rules may need to
+ be reconsidered.
+ update(object); can also be used; here the Knowledge Helper will look 
+ up the facthandle for you, via an identity check, for the passed object. 
+ */
+ 
+rule "Hello World"
+    when
+        m : Message( status == Message.HELLO, myMessage : message )
+    then
+        System.out.println( myMessage );
+        m.setMessage( "Goodbye cruel world" );
+        m.setStatus( Message.GOODBYE );
+        update( m );
+end
+
+// Standard HELLOWORLD Message Rule 
+rule "GoodBye"
+    when
+        Message( status == Message.GOODBYE, myMessage : message )
+    then
+        System.out.println( myMessage );
+end
+
+
+
+
+
+// POJO - from calling JAVA function example.
+rule "Versaggi"
+    // Note: If you do not have the setters and getters established in your POJO's the attribute calls will FAIL!
+    when
+        c : Contact( $myName : name, name == "Matthew Versaggi", $myEmail : emailAddr, emailAddr == "matt@versaggi.com", $myPhoneNum : phoneNum)
+    then 
+        Hello myHello = new Hello($myName);
+        System.out.println( myHello.getName() + "  " + $myEmail);
+        System.out.println( "Greetings: " + greetings($myName));
+        System.out.println("Matt V is in da House! His Phone Number is: " + $myPhoneNum );
+end
+
+   
+ // STRING existance rule Example       
+ rule "String"       
+    when 
+        String( this == "foo" )   
+    then
+        System.out.println("Foo has been boo'd !");      
+ end
+ 
+ 
+ // BOOLEAN Existence example.
+ rule "Boolean"
+    when 
+        Boolean(this == FALSE)
+    then 
+        System.out.println("Truth! ");
+ end
+ 
+ 
+ /*
+ EVAL and GLOBAL LIST Example
+ 
+ The conditional element eval is essentially a catch-all which allows any 
+ semantic code (that returns a primitive boolean) to be executed.
+ */
+ 
+ rule "ListGlobal & Eval"
+    when
+        eval (true) 
+    then
+        System.out.println("StringList: " + myStringList.add("foo99dude") + " : " + myStringList.get(1));
+        System.out.println("StringList: " + myStringList.get(2));
+end
+ 
+ 
+// CONTAINS Example
+rule "Cheese - Contains" 
+    when
+         // $chz : Cheese ( cheeseTypes not contains "Stilton1")
+         //$chz : Cheese ( cheeseTypes contains "Stilton")
+         $chz : Cheese ( $cheeseName : name soundslike "Stilltun1")
+    then
+        System.out.println("Who cut the " + $cheeseName +  " cheese, Milton !!! ");
+end
+ 
+  
+ // DECLARE TYPE RULE
+ rule "Make Person Bob via DeclareType"
+    when
+        eval (true)
+    then
+        Person bob = new Person();
+        bob.setName("Bob"); 
+        insert(bob);
+        System.out.println( "Greetings: " + bob.getName());
+ end
+ 
+ 
+ 
+ // EXTENDS (Inheritance) Examples
+ rule "Extends Student"
+    when
+        $p : Person(name == "Bob")
+    then
+        LongTermStudent mark = new LongTermStudent();
+        mark.setName("Mark");
+        mark.setYears(12);
+        mark.setCourse("Java Programming");
+        mark.setFavouriteCheese("Stilton"); 
+        insert(mark);
+        System.out.println( "Greetings: " + mark.getName() + " how is course " + mark.getCourse() + " going?");
+ end
+ 
+ 
+ 
+ // FORALL ExampleS
+ rule "All English Busses are Red"
+ 	when
+ 		forall( $bus : Bus( type == 'english') 
+                       Bus( this == $bus, color == 'red' ) )
+ 	then
+ 		System.out.println("All English busses are red.");
+end
+ 
+ 
+ /*
+ FROM Example
+ 
+ The Conditional Element from enables users to specify an arbitrary source for data to be matched by LHS patterns. 
+ This allows the engine to reason over data not in the Working Memory.
+ */
+ rule "From Test - reason over objects from nested collections: 'alarms' is an ArrayList property of the object Bus"
+ 	when
+ 		$bus : Bus( )
+ 		$alarm : Alarm() from $bus.alarms
+ 	then
+ 		System.out.println("We've got " + $alarm.getName() + " alarms on bus " + $bus.getName());
+
+end
+
+
+
+/*
+
+COLLECT Example:
+
+The result pattern of collect can be any concrete class that implements the java.util.Collection interface 
+and provides a default no-arg public constructor. This means that you can use Java collections like ArrayList, 
+LinkedList, HashSet, etc., or your own class, as long as it implements the java.util.Collection interface and 
+provide a default no-arg public constructor.
+ 
+The collect element can gather multipleobjects into one collection. The object in the collect statement 
+is the POJO class Bus().
+
+*/  
+
+ rule "Collect Test"
+ 	when
+ 		$busList : ArrayList()  from collect ( Bus( color == 'red', type == 'english') )  
+ 	then
+		System.out.println("Collection Test Succeeded See Below: ");
+		
+		for (Object $myBus : $busList) {
+			System.out.println( $myBus );
+		} 	
+end
+
+
+/*
+
+ACCUMULATE Examples (3)
+
+*/
+ 
+ 
+rule "Accumulate Test #1 "
+ 	when
+ 		accumulate ( AlarmsResultSet( $as : alarms ); $c : count($as) )
+ 	then
+ 		System.out.println("Accumulate Test: there are " + $c + " Alarm Results sets.");
+ end
+  
+ 
+ rule "Accumulate Test #2 "
+ 	when
+ 			accumulate ( Bus( $busNumber : busNumber ); $count : count($busNumber) )
+ 	then
+ 		System.out.println("Accumulate Test Bus: there are a total of " + $count + " Bus Numbers.");
+ end
+ 
+ 
+ rule "Accumulate Test #3"
+ 	when
+ 		$b : Bus()
+ 		accumulate ( Alarm( bus == $b, $busName : name ); $count : count($busName) )
+ 	then
+ 		System.out.println("Accumulate Test Bus: " + $b.getName() + " has  " + $count + "  Alarms." );
+ end
+ 
+ 
+ rule "Accumulate Test #4"
+ 	when
+ 		$b : Bus( )
+ 		accumulate ( Alarm( bus == $b, $busName : name, type == 'serious' ); $count : count($busName) )
+ 	then
+ 		System.out.println("Accumulate Test Bus: " + $b.getName() + " has  " + $count + "  serious Alarms." );
+ end
+ 
+ 
+ 
+ 
+ // SOUNDSLIKE ExampleS
+ rule "soundslike"
+ 	when
+ 		Person( $cheese : favouriteCheese )
+ 		$chz : Cheese ( name soundslike "Stilltun1")
+ 	then
+ 		System.out.println("Someone like Stilton !");
+ end
+
+
+
+/*
+MEMBEROF Example
+
+This version of memberOf returns the object that the field is a part of if it actually is a part of it.
+The entire object gets returned.
+*/
+
+rule "memberOf"
+	when
+		// $chz : Cheese ( cheeseTypes contains "Stilton")
+		$chz : Cheese ( $mchz : matureCheeses )
+		$tmp : Cheese ( "Stilton" memberOf $mchz )
+	then
+	System.out.println("*** memberOf Cheese works..." + $tmp );
+end
+
+
+ /*
+ COMPOUND VALUE RESTRICTION Example
+ 
+ The compound value restriction is used where there is more than one possible value to match. 
+ Currently only the "in" and "not" in evaluators support this. The second operand of this 
+ operator must be a comma-separated list of values, enclosed in parentheses. Values may be 
+ given as variables, literals, return values or qualified identifiers. 
+ */
+
+ rule "compoundValueRestriction"
+ 	when
+ 		Person( name == 'Mark', $cheese : favouriteCheese )
+		Cheese( "Stilton" in ( "Asigio", "Cheddar", $cheese, "Brie" ) )
+ 	then
+ 		System.out.println("compoundValueRestrictionfired: Fav Cheese: " + $cheese );
+ end
+
+ 
+ 
+ 
+// EXISTS Example 
+rule "exists"
+	when
+		exists Bus( type == 'english', busNumber == '452')
+	then
+		System.out.println("English Bus 452 exists ! ");
+end
+
+ 
+ 
+ 
+ /*
+     Truth Maintenance with Logical Objects using Inference.
+ 
+ With logical assertions, the fact that was asserted will be automatically retracted 
+ when the conditions that asserted it in the first place are no longer true. Actually, 
+ it's even cleverer then that, because it will be retracted only if there isn't any 
+ single condition that supports the logical assertion.
+ 
+ For each logical insertion there can only be one equal object, and each subsequent 
+ equal logical insertion increases the justification counter for this logical assertion. 
+ A justification is removed by the LHS of the creating rule becoming untrue, and the 
+ counter is decreased accordingly. As soon as we have no more justifications the logical 
+ object is automatically retracted.
+ 
+ */
+
+
+// OBJECT Declarations using INHERITANCE from PERSON Declaration (above)
+
+// This is the Rider Object (One who rides the Bus)
+declare Rider
+	name : String @key
+	age : int @key
+end
+
+
+// PassType Declarations
+declare AdultBusPass  
+    rider : Rider @key
+end 
+ 
+declare ChildBusPass  
+    rider : Rider @key
+end  
+ 
+ 
+// RiderType Declarations 
+declare IsChild  
+    rider : Rider @key
+end   
+ 
+declare IsAdult  
+    rider : Rider @key
+end  
+
+
+ 
+// If person is a child < 16, issue a child bus pass 
+rule "Issue Child Bus Pass" 
+	when
+  		$r : Rider( age < 16 )
+       	IsChild( rider == $r )
+	then
+    	insertLogical(new ChildBusPass( $r ) );
+    	System.out.println("LogicalInsert: Issued Child Bus Pass to: " + $r.getName() );
+end
+ 
+ 
+// If person is an adult > 16, issue an adult bus pass
+rule "Issue Adult Bus Pass" 
+	when
+  		$r : Rider( age >= 16 )
+       	IsAdult( rider == $r )
+	then
+    	insertLogical(new AdultBusPass( $r ) );
+    	System.out.println("LogicalInsert: Issued Adult Bus Pass to: " + $r.getName() );
+end
+
+ 
+// INFERENCE RULES
+
+/*
+A "insertLogical" is part of the Drools Truth Maintenance System (TMS). 
+Here the fact is "logically inserted", this fact is dependant on the truth 
+of the "when" clause. It means that when the rule becomes false the fact is 
+automatically retracted. This works particularly well as the two rules are 
+mutually exclusive. So in the above rules if the person is under 16 it inserts 
+an IsChild fact, once the person is 16 or over the IsChild fact is automatically 
+retracted and the IsAdult fact inserted.
+*/
+ 
+rule "Infer Child" 
+	when
+    	$r : Rider( age < 16 )
+	then
+    	insertLogical( new IsChild( $r ) );
+    	System.out.println("LogicalInsert: Declared " + $r.getName() + " to be a child." );
+end
+
+
+rule "Infer Adult" 
+	when
+    	$r : Rider( age >= 16 )
+	then
+    	insertLogical( new IsAdult( $r ) );
+    	System.out.println("LogicalInsert: Declared " + $r.getName() + " to be an adult." );
+end 
+ 
+  
+ // INSERT OBJECTs and Text TRIGGERS
+// Insert Objects (POJO's) into Working Memory.
+rule "Insert Bus Riders" 
+ 	when
+ 		eval (true)
+ 	then
+ 		insert ( new Rider("Bob", 35) );
+ 		insert ( new Rider("Tommy", 14) );
+end
+ 
+ 
+// UPDATE & MODIFY SALIENCE Example: Tommy's age to 17
+
+rule "Update Tommy's age to 17" 
+	salience(-10)
+	when
+		$r : Rider( name == "Tommy", age < 16 )
+	then
+		//$r.setAge(17);   <= this is the UPDATE Syntax (less Flexible that the MODIFY Syntax)
+		//update( $r );
+		modify ( $r ) {
+				setAge(18)
+			}
+		System.out.println("Tommy is now " + $r.getAge() + " years old.");
+end
+ 
+ 
+ 
+// RETRACT SALIENCE Example
+rule "Retract the Tommy Object"
+	salience(-20)
+	when
+		$r : Rider( name == "Tommy")
+	then
+		retract( $r )
+		System.out.println("Object Tommy is now RETRACTED");
+end
+
+
+
+
+// Invoke an EXTERNAL Method from a POJO inserted into WM Example
+// The POJO BUS has a method printBusGreetings(), which we can call.
+rule "Invoke an External Method Example"
+	when
+		$b : Bus( name == "Tiny Red")
+	then
+		$b.printBusGreetings();
+end
+
+
+ // STRING injection by externam method existance Example       
+ rule "String injection"       
+    when 
+        String( this == "FOOBAR" )   
+    then
+        System.out.println("*** THE STRING HAS BEEN INJECTED VIA A KSESSION ATTRIBUTE ****\n");      
+ end
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
